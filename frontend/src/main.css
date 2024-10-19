@@ -4,6 +4,10 @@ body {
   padding: 0;
   display: flex;
   justify-content: center;
+
+  /* Prevent scrollbars from shifting things */
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 #root {

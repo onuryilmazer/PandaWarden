@@ -4,14 +4,32 @@ const AuthContext = createContext(null);
 import { getToken } from "../services/LoginService";
 import { useNavigate } from "react-router-dom";
 
-const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(null);
-    const navigate = useNavigate()
+const getTokenFromBrowserStorage = () => {
+    let token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
-    const loginHandler = async ({username, password}) => {
+    return token;
+}
+
+const saveTokenIntoBrowserStorage = (token, rememberMe) => {
+    let storage = rememberMe ? localStorage : sessionStorage;
+    
+    storage.setItem("token", token);
+}
+
+const removeTokenFromBrowserStorage = () => {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+}
+
+const AuthProvider = ({ children }) => {
+    const [token, setToken] = useState(getTokenFromBrowserStorage());
+    const navigate = useNavigate();
+
+    const loginHandler = async ({username, password, rememberMe}) => {
         const tokenResponse = await getToken({username, password});
 
         if (tokenResponse) {
+            saveTokenIntoBrowserStorage(tokenResponse, rememberMe);
             setToken(tokenResponse);
             navigate("/dashboard");
             return true;
@@ -21,6 +39,7 @@ const AuthProvider = ({ children }) => {
     }
 
     const logoutHandler = () => {
+        removeTokenFromBrowserStorage();
         setToken(null);
         navigate("/");
     }

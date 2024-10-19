@@ -1,0 +1,11 @@
+.notfound-container {
+    width: 30rem;
+    
+    background-color: rgba(1, 1, 1, 0.62);
+
+    color: white;
+    padding: 2rem;
+    margin: 2rem;
+
+    font-size: 1.2rem;
+}
