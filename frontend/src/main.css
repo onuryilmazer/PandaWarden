@@ -1,0 +1,21 @@
+body {
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,90,121,1) 35%, rgba(0,212,255,1) 100%);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+#root {
+  width: 100%;
+
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  gap: 1rem;
+  
+}
+
+a {
+  color: white;
+}
