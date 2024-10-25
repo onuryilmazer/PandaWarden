@@ -28,13 +28,14 @@ const AuthProvider = ({ children }) => {
     const loginHandler = async ({username, password, rememberMe}) => {
         const tokenResponse = await getToken({username, password});
 
-        if (tokenResponse) {
-            saveTokenIntoBrowserStorage(tokenResponse, rememberMe);
-            setToken(tokenResponse);
+        if (tokenResponse.ok) {
+            saveTokenIntoBrowserStorage(tokenResponse.token, rememberMe);
+            setToken(tokenResponse.token);
             navigate("/dashboard");
             return true;
         }
         
+        console.log(tokenResponse.errors);
         return false;
     }
 

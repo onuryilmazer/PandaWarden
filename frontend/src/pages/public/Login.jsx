@@ -2,9 +2,9 @@ import { useState } from "react";
 import "./Login.css";
 import { FaFish, FaUser, FaLock } from "react-icons/fa";
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
-import Tooltip from "../components/Tooltip";
+import Tooltip from "../../components/Tooltip";
 
 const TOOLTIP_TEXT = {
     rememberMe: "If you check this box, your credentials will be persisted in your browser's \"Local Storage\", and you will stay logged in until you manually sign out.",
@@ -24,9 +24,11 @@ function Login() {
         const elements = event.currentTarget.elements;
 
         //Login handler handles redirection in case of successful log in
-        const loggedIn = await auth.loginHandler({username: elements.username.value, 
+        const loggedIn = await auth.loginHandler({
+            username: elements.username.value, 
             password: elements.password.value, 
-            rememberMe: elements.rememberme.checked});
+            rememberMe: elements.rememberme.checked
+        });
 
         if (!loggedIn) {
             setLoginError("Invalid username and/or password.");
@@ -64,7 +66,7 @@ function Login() {
                 
                 <hr />
 
-                <button disabled>Login with Google</button>
+                <button disabled>Log in with Google (coming soon)</button>
             </form>
         </div>
     )

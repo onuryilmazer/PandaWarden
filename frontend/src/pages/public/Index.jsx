@@ -4,7 +4,7 @@ import './Index.css'
 function Index() {
 
   return (
-    <div className="indexContainer">
+    <div className="index-container">
       <HeroSection />
     </div>
   )

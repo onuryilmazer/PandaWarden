@@ -14,7 +14,7 @@ function NotFound404() {
             if (cancel) return;
             
             if (remainingSeconds > 1) setRemainingSeconds(s => s - 1);
-            else navigate("/");
+            else navigate(-1);
 
         }, 1000);
 
@@ -24,7 +24,7 @@ function NotFound404() {
     return (
         <div className="notfound-container">
             <h1>Page not found</h1>
-            <p>You will be redirected to the homepage in {remainingSeconds} seconds.</p>
+            <p>You will be redirected to the previous page in {remainingSeconds} seconds.</p>
         </div>
     );
 }

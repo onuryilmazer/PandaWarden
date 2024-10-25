@@ -1,21 +1,21 @@
+import "./Dashboard.css";
 
 function Dashboard() {
     return(
-        <>
-            <div>
-                <h1>My Scans</h1>
-                <button>+</button>
+        <div className="dashboard-container">
+            <div className="header">
+                <h1>My Scans</h1> <button>+</button>
             </div>
             <RecurringScans />
             <OneTimeScans />
-        </>
+        </div>
     )
 
 }
 
 function RecurringScans() {
     return(
-        <div>
+        <div className="scan-container">
             <h2>Recurring scans</h2>
             <Scan />
             <Scan />
@@ -26,7 +26,7 @@ function RecurringScans() {
 
 function OneTimeScans() {
     return(
-        <div>
+        <div className="scan-container">
             <h2>One-time scans</h2>
             <Scan />
             <Scan />
@@ -37,7 +37,7 @@ function OneTimeScans() {
 
 function Scan() {
     return(
-        <div>
+        <div className="scan-entry">
             <span>Name</span>
             <span>Date: 01.01.24</span>
             <span>Results: 0 New / 0 Total</span>

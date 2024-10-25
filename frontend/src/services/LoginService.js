@@ -1,21 +1,23 @@
-const BASE_URL = "/authenticate";
+const BASE_URL = "/auth";
 
 async function getToken({username, password}) {
-    const response = await fetch(`${BASE_URL}/getToken`, {
+    const header = await fetch(`${BASE_URL}/login`, {
         method: "POST",
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({username, password})
     });
 
-    if (!response.ok) return null;
+    let returnValue = {
+        ok: header.ok
+    };
 
-    const reply = await response.json();
+    if (header.ok) {
+        const body = await header.json();
+        returnValue.token = body.token;
+        returnValue.errors = body.errors;
+    }
 
-    return reply;
+    return returnValue;
 }
 
-async function mockGetToken({username, password}) {
-    if (username == "asd" && password == "123") return "ok";
-    else return null;
-}
-
-export {mockGetToken as getToken};
+export { getToken };

@@ -1,0 +1,17 @@
+.hero {
+    
+}
+
+.index-container {
+    width: 50rem;
+    padding: 3rem;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.61);
+
+    display: flex;
+    flex-flow: column nowrap;
+
+    align-items: center;
+    
+}
+

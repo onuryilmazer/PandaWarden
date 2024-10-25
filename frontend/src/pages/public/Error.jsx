@@ -16,7 +16,7 @@ function Error() {
             if (cancel) return;
             
             if (remainingSeconds > 1) setRemainingSeconds(s => s - 1);
-            else navigate("/");
+            else navigate(-1);
 
         }, 1000);
 
@@ -27,7 +27,7 @@ function Error() {
         <div className="error-container">
             <h1>Error</h1>
             <p>{error.statusText || error.message}</p>
-            <p>You will be redirected to the homepage in {remainingSeconds} seconds.</p>
+            <p>You will be redirected to the previous page in {remainingSeconds} seconds.</p>
         </div>
     );
 }
