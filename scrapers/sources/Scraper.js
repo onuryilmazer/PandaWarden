@@ -1,10 +1,11 @@
 class Scraper {
     /**
-     * @param {import("playwright").BrowserContext} context 
+     * 
+     * @param {import("playwright").BrowserContext} context The browser context in which a page will be created and the source will be scraped
      */
     constructor(context) {
         this.context = context;        
-        this.folderName = `Scraper_${Date.now()}`;
+        this.folderName = `${process.env.DATA_FOLDER}/Scraper_${Date.now()}`;
     }
 
     /**

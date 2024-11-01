@@ -7,9 +7,13 @@ class DWScraper extends Scraper {
     _initialized = false;
     articles = [];
 
+    /**
+     * 
+     * @param {import("playwright").BrowserContext} context The browser context in which a page will be created and the source will be scraped
+     */
     constructor(context) {
         super(context);
-        this.folderName = `DW_${Date.now()}`;
+        this.folderName = `${process.env.DATA_FOLDER}/DW_${Date.now()}`;
     }
 
     /**
@@ -28,14 +32,14 @@ class DWScraper extends Scraper {
         await this._destroy();
 
         //return array of scraped images (user can save them into db).
-        return this.articles;
+        return {articles: this.articles, screenshotsFolder: this.folderName};
     }
 
     async _initialize() {
         if (this._initialized) return;
 
         //create screenshots folder
-        await mkdir(this.folderName);
+        await mkdir(this.folderName, {recursive: true});
 
         //create page & goto homepage
         this.page = await this.context.newPage();
@@ -58,7 +62,7 @@ class DWScraper extends Scraper {
             info("Dismissing cookies...");
         
             const cookieRejectButton = this.page.locator("#cmpwelcomebtnno");
-            await cookieRejectButton.waitFor({state: "visible"});
+            await cookieRejectButton.waitFor({state: "visible", timeout: 5000});
             await cookieRejectButton.click();
             await cookieRejectButton.waitFor({state: "hidden"});
         
@@ -90,9 +94,9 @@ class DWScraper extends Scraper {
         
             const topStoryContainer = this.page.locator("section.top-story");
             const titleLink = topStoryContainer.locator("h3 a");
-            topStory.title = await titleLink.textContent();
+            topStory.title = await titleLink.innerText();
             topStory.url = await titleLink.evaluate(link => link.href);
-            topStory.time = await topStoryContainer.locator("time").first().textContent();
+            topStory.time = await topStoryContainer.locator("time").first().innerText();
             
             let imageBuffer = await topStoryContainer.screenshot({type: "jpeg"});
             topStory.screenshotPath = this._generateImagePath(topStory.title, ".jpeg");
@@ -116,10 +120,10 @@ class DWScraper extends Scraper {
             for(let newsItem of await newsItems.all()) {
                 try {
                     let newsItem_processed = {};
-                    newsItem_processed.time = await newsItem.locator("time").first().textContent();
+                    newsItem_processed.time = await newsItem.locator("time").first().innerText();
                     
                     const link = newsItem.locator(".news-title a");
-                    newsItem_processed.title = await link.textContent();
+                    newsItem_processed.title = await link.innerText();
                     newsItem_processed.url = await link.evaluate(link => link.href);
                     newsItems_processed.push(newsItem_processed);
 
@@ -152,9 +156,18 @@ class DWScraper extends Scraper {
             for(let teaser of await teasers.all()) {
                 try {
                     const teaser_processed = {};
-                    teaser_processed.title = await teaser.locator(".teaser-data").textContent();
+
+
+                    teaser_processed.title = await teaser.locator(".teaser-data a").first().innerText();
+
+                    try { teaser_processed.description = await teaser.locator(".teaser-data .teaser-description").innerText({timeout: 1000}); }
+                    catch (e) { console.log("No description for " + teaser_processed.title); }
+
                     teaser_processed.url = await teaser.locator(".teaser-data a").first().evaluate(link => link.href);
-                    teaser_processed.time = await teaser.locator("time").first().textContent({timeout: 5000});                
+
+                    try { teaser_processed.time = await teaser.locator("time").first().innerText({timeout: 1000}); }
+                    catch (e) { console.log("No time for " + teaser_processed.title); }
+
                     teasers_processed.push(teaser_processed);
             
                     const imageBuffer = await teaser.screenshot({type: "jpeg"});

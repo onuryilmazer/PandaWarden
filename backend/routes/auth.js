@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 
 router.post("/login", 
     body("username").trim().notEmpty().withMessage("Username can't be empty."),
-    body("password").trim().notEmpty().withMessage("Password can't be empty"),
+    body("password").trim().notEmpty().withMessage("Password can't be empty."),
     async (req, res, next) => {
         const validationErrors = validationResult(req);
         if (!validationErrors.isEmpty()) {

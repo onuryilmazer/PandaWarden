@@ -7,7 +7,7 @@ function info(message) {
 }
 
 function debug(message) {
-    console.log( chalk.gray(message) );
+    //console.log( chalk.gray(message) );
 }
 
 function error(message) {
