@@ -6,6 +6,11 @@ import { rm, rmdir } from "node:fs/promises";
 
 const router = express.Router();
 
+router.get("/denemeAuthReq", (req, res) => {
+    console.log("here!");
+    res.json(req.token);
+})
+
 router.get("/:sourceId", 
     param("sourceId").trim().notEmpty().isInt().withMessage("Invalid source ID."),    
     async (req, res) => {

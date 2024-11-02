@@ -10,9 +10,10 @@ app.use(express.json());
 import authRouter from "./routes/auth.js";
 import userRouter from "./routes/user.js";
 import scrapeRouter from "./routes/scrape.js"
+import checkAuthToken from "./middleware/authMiddleware.js";
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
-app.use("/scrape", scrapeRouter);
+app.use("/scrape", checkAuthToken, scrapeRouter);
 
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
