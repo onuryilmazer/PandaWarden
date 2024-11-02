@@ -1,3 +1,5 @@
+//TODO complete custom validators.
+
 import { body } from "express-validator";
 
 //email in use

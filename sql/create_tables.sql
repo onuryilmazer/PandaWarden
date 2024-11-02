@@ -89,7 +89,7 @@ CREATE TABLE monitoring_requests_sources (
   source_id INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS scraping_errors (
+CREATE TABLE scraping_errors (
   id BIGSERIAL PRIMARY KEY,
   source_id INTEGER,
   time TIMESTAMP,

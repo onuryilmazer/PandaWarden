@@ -1,20 +1,32 @@
-import { verify_promisified } from "../utils/jwt-promisify.js";
+import userService from "../services/userService.js";
 
 async function checkAuthToken(req, res, next) {
     const authHeader = req.get("Authorization");
+
+    if (!authHeader) {
+        return res.status(400).json({
+            ok: false,
+            error: "Authorization header missing."
+        });
+    }
+
     const authHeaderParts = authHeader.split(" ");
 
     if (authHeaderParts.length != 2 || authHeaderParts[0] !== "Bearer") {
-        return res.status(400).json({error: "Malformed authorization header."});
+        return res.status(400).json({
+            ok: false,
+            error: "Malformed authorization header."
+        });
     }
-    
-    try {
-        const token = await verify_promisified(authHeaderParts[1], process.env.JWT_KEY);
-        req.token = token;
-        next();
+
+    const authResult = await userService.verifyAuthToken(authHeaderParts[1]);
+
+    if (authResult.ok) {
+        req.token = authResult.token;
+        return next();
     }
-    catch (e) {
-        return res.status(401).json({error: e.name});
+    else {
+        return res.status(401).json(authResult);
     }
 }
 

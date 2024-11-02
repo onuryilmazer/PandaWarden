@@ -52,7 +52,7 @@ class ScraperPool extends EventEmitter {
      * 
      * @param {string} source The name of the source that will be scraped for content.
      * @fires ScraperPool#jobQueueChanged
-     * @returns {Promise<any[]>}
+     * @returns {Promise<{ok: true, data: [], dataFolder: string} | {ok: false, error: Error}>}
      */
     scrape(source) {
         let queuedJobPromise = new Promise((resolve, reject) => {
@@ -77,7 +77,7 @@ class ScraperPool extends EventEmitter {
     _processQueue() {
         if (this.jobQueue.size === 0 || this.freeWorkers.size === 0) return;
         
-        //find an available worker:
+        //find an available worker (discarding invalid ones):
         const worker = this.freeWorkers.dequeue();
         if (!worker.connected || worker.killed) return this._processQueue();
 
@@ -97,16 +97,15 @@ class ScraperPool extends EventEmitter {
             this._processQueue();
         }
 
+        //the "error" event may trigger together with "exit", this flag prevents handling the same failure twice
         let failureHandled = false;
-
         const failureHandler = async (error) => {
-            if (failureHandled) return;             //the "error" event may trigger together with "exit", this line prevents handling one event twice
+            if (failureHandled) return;
             failureHandled = true;
 
-            this.nrOfActiveJobs--;
+            this.nrOfActiveJobs--;          //TODO requeue jobs for a fixed number of times after failure
             this.emit("jobQueueChanged", this.nrOfActiveJobs);
 
-            console.log("Rejecting task and creating new worker due to error");
             reject({ 
                 ok: false,
                 error: `Worker failed with the following error: ${error}`,
@@ -138,6 +137,4 @@ class ScraperPool extends EventEmitter {
     }
 }
 
-const scraperPool = new ScraperPool();
-
-export { scraperPool };
+export { ScraperPool };

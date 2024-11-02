@@ -1,7 +1,7 @@
 import express from "express";
-import bcrypt, { hash } from "bcrypt";
 import { body, validationResult } from "express-validator";
-import { query } from "../utils/db.js";
+import userService from "../services/userService.js";
+
 
 const router = express.Router();
 
@@ -24,41 +24,15 @@ router.post("/register",
         const validationErrors = validationResult(req);
 
         if (!validationErrors.isEmpty()) {
-            return res.status(400).json({errors: validationErrors.array()});
+            return res.status(400).json({
+                ok: false,
+                error: validationErrors.array()
+            });
         }
 
-        //check if username / email is in db
-        try {
-            const usernameQuery = await query("SELECT * FROM users WHERE username = $1", [req.body.username]);
-            if (usernameQuery.rows.length !== 0) return res.status(400).json({errors: [`Username ${req.body.username} is not available.`] });
-
-            const emailQuery = await query("SELECT * FROM users WHERE email = $1", [req.body.email]);
-            if (emailQuery.rows.length !== 0) return res.status(400).json({errors: [`Email ${req.body.email} is already registered.`] });
-        }
-        catch (e) {return next(e);}
-
-        //hash pw
-        let hashedPw;
-        try {
-            hashedPw = await bcrypt.hash(req.body.password, +process.env.BCRYPT_SALT_ROUNDS);
-        }
-        catch (e) {return next(e);}
-
-        //save into db
-        try {
-            const registrationQuery = await query("INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *", 
-                [req.body.username, req.body.email, hashedPw]);
-            
-            if (registrationQuery.rowCount !== 0) {
-                return res.status(201).json(
-                    {
-                        info: `Registration successful.`,
-                        details: {username: registrationQuery.rows[0].username, email: registrationQuery.rows[0].email}
-                    }
-                );
-            }
-        }
-        catch (e) {next(e);}    
-});
+        const result = userService.persistUserIntoDatabase({username: req.body.username, password: req.body.password, email: req.body.email});
+        return res.status( result.ok ? 201 : 400 ).json(result);
+    }
+);
 
 export default router;

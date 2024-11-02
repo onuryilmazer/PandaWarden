@@ -10,7 +10,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/auth": `${BACKEND_DEV_HOST}`,
-      "/user": `${BACKEND_DEV_HOST}`
+      "/user": `${BACKEND_DEV_HOST}`,
+      "/scrape": `${BACKEND_DEV_HOST}`,
+      "/articles": `${BACKEND_DEV_HOST}`,
+      "/scraper_data": `${BACKEND_DEV_HOST}`,
     },
     
   }

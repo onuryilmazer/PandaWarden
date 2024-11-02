@@ -29,7 +29,7 @@ class ScraperWorker {
         if (!scrapers.has(source)) {
             process.send({ 
                 ok: false,
-                error: `Source ${source} is not supported.`,
+                error: new Error(`Source ${source} is not supported.`),
             });
             return;
         }
@@ -53,25 +53,21 @@ class ScraperWorker {
         await this.browser.close();
         process.exit(0);
     }
-
-    async _saveToDatabase() {
-        
-    }
 }
 
 const scraperWorker = new ScraperWorker();
 scraperWorker.initialize();
 
-process.on("message", async message => {
+process.on("message", message => {
     switch (message.command) {
         case "scrape": 
-            await scraperWorker.scrape(message.source);
+            scraperWorker.scrape(message.source);
             break;
         case "close":
-            await scraperWorker.close();
+            scraperWorker.close();
             break;
         case "initialize":
-            await scraperWorker.initialize();
+            scraperWorker.initialize();
             break;
     }
 });
