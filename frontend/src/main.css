@@ -1,25 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Tomorrow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 body {
-  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,90,121,1) 35%, rgba(0,212,255,1) 100%);
+  /* background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 90, 121, 1) 35%, rgba(0, 212, 255, 1) 100%); */
+  background-image: url("./assets/bg.jpg");
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
   margin: 0;
   padding: 0;
   display: flex;
   justify-content: center;
 
+  font-family: "Tomorrow";
+
   /* Prevent scrollbars from shifting things */
   width: 100vw;
   overflow-x: hidden;
+
+  /* Make the background image cover the screen */
+  height: 100vh;
 }
 
 #root {
+  box-sizing: border-box;
   width: 100%;
 
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-  gap: 1rem;
-  
-}
+  gap: 3rem;
 
-a {
-  color: white;
+  & .page-container {
+    box-sizing: border-box;
+    width: 80rem;
+
+    @media (max-width: 80rem) {
+      width: 60rem;
+    }
+
+    @media (max-width: 60rem) {
+      width: 100%;
+    }
+
+    padding: 3rem;
+    padding-bottom: 5rem;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.9);
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 3rem;
+
+    & .page-title {
+      width: 100%;
+      text-align: center;
+
+      & h1 {
+        margin: 0;
+      }
+    }
+
+    & .block-container {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid white;
+      padding: 1rem 2rem;
+
+      display: flex;
+      flex-flow: column nowrap;
+      gap: 1rem;
+
+      & .block-header {
+        width: 100%;
+
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      & .block-row {
+        width: 100%;
+
+        display: flex;
+        flex-flow: row wrap;
+      }
+    }
+
+  }
+
 }

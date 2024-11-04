@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import "./main.css";
+import "./inputStyles.css";
 
 import WebsiteWrapper from './pages/WebsiteWrapper.jsx';
 import Index from './pages/public/Index.jsx';
@@ -21,18 +22,20 @@ import Scan from './pages/user/Scan.jsx';
 import CreateScan from './pages/user/CreateScan.jsx';
 import ProtectedPage from './components/ProtectedPage.jsx';
 
+import "./util/fixBackground.js";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route >
-      <Route path='/' element={<WebsiteWrapper/>} errorElement={<Error />}>
+    <Route element={<WebsiteWrapper/>}>
+      <Route path='/' errorElement={<Error />}>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
         <Route path="/createScan" element={<ProtectedPage><CreateScan /></ProtectedPage>} />
         <Route path="/scan/:id" element={<ProtectedPage><Scan /></ProtectedPage>} />
-      </Route>      
-      <Route path='*' element={<NotFound404/>} />
+        <Route path='*' element={<NotFound404/>} />
+      </Route>
     </Route>
   )
 )

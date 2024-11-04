@@ -9,12 +9,7 @@ async function registerUser({username, email, password}) {
 
     const body = await header.json();
 
-    return {
-        ok: header.ok,
-        errors: body.errors,
-        info: body.info,
-        details: body.details
-    };
+    return body;
 }
 
 //delete user

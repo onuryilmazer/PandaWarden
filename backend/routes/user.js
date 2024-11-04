@@ -30,7 +30,7 @@ router.post("/register",
             });
         }
 
-        const result = userService.persistUserIntoDatabase({username: req.body.username, password: req.body.password, email: req.body.email});
+        const result = await userService.persistUserIntoDatabase({username: req.body.username, password: req.body.password, email: req.body.email});
         return res.status( result.ok ? 201 : 400 ).json(result);
     }
 );

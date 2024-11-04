@@ -1,0 +1,16 @@
+.success-message-container {
+    display: flex;
+    justify-content: center;
+
+    & .success-message-text {
+        padding: 1rem;
+        color: white;
+        background-color: rgba(0, 255, 34, 0.233);
+
+        &::before {
+            content: "✅";
+            vertical-align: inherit;
+            padding-right: 0.2rem;
+        }
+    }
+}

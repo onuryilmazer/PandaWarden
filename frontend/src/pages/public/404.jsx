@@ -22,8 +22,8 @@ function NotFound404() {
     }, [remainingSeconds]);
 
     return (
-        <div className="notfound-container">
-            <h1>Page not found</h1>
+        <div className="page-container">
+            <div className="page-title"> <h1>Page not found</h1> </div>
             <p>You will be redirected to the previous page in {remainingSeconds} seconds.</p>
         </div>
     );

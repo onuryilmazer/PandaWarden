@@ -6,7 +6,7 @@ class UserService {
     /**
      * 
      * @param {string} username 
-     * @returns {boolean} true if username is being used.
+     * @returns {Promise<boolean>} true if username is being used.
      */
     async usernameIsBeingUsed(username) {
         const usernameQuery = await db.query("SELECT * FROM users WHERE username = $1", [username]);
@@ -16,7 +16,7 @@ class UserService {
     /**
      * 
      * @param {string} email 
-     * @returns {boolean} true if email is being used.
+     * @returns {Promise<boolean>} true if email is being used.
      */
     async emailIsBeingUsed(email) {
         const emailQuery = await db.query("SELECT * FROM users WHERE email = $1", [email]);
@@ -26,17 +26,17 @@ class UserService {
     /**
      * 
      * @param {string} password 
-     * @returns {string} Salted and hashed password
+     * @returns {Promise<string>} Salted and hashed password
      */
     async hashPassword(password) {
-        const hashedPw = await bcrypt.hash(req.body.password, +process.env.BCRYPT_SALT_ROUNDS);
+        const hashedPw = await bcrypt.hash(password, +process.env.BCRYPT_SALT_ROUNDS);
         return hashedPw;
     }
 
     /**
      * Saves user into database.
      * @param {{username: string, email: string, password: string}} userInfo 
-     * @returns { {ok: true, data: {username: string, email: string}} | {ok: false, error: Error} }
+     * @returns { Promise<{ok: true, data: {username: string, email: string}} | {ok: false, error: Error}> }
      */
     async persistUserIntoDatabase({username, email, password}) {
         let result = {};

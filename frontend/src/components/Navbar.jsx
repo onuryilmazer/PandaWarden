@@ -1,7 +1,7 @@
 import "./Navbar.css";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import logo from "../assets/logo.svg";
 
 function Navbar() {
     const auth = useAuth();
@@ -10,8 +10,8 @@ function Navbar() {
     return(
         <div className="navbar">
             <div className="left">
-                <span>LOGO</span>
-                <NavLink to={"/"}>Panda Warden</NavLink>
+                <NavLink to={"/"}><div className="logo-container"><img className="logo" src={logo}/></div></NavLink>
+                <NavLink to={"/"}>Home</NavLink>
                 {loggedIn && <NavLink to={"/dashboard"}>Dashboard</NavLink>}
             </div>
 

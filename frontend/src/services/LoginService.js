@@ -8,7 +8,8 @@ async function getToken({username, password}) {
     });
 
     let returnValue = {
-        ok: header.ok
+        ok: header.ok,
+        status: header.status,
     };
 
     if (header.ok) {

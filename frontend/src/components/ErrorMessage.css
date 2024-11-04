@@ -1,0 +1,16 @@
+.error-message-container {
+    display: flex;
+    justify-content: center;
+
+    & .error-message-text {
+        padding: 1rem;
+        color: white;
+        background-color: rgba(255, 0, 0, 0.233);
+
+        &::before {
+            content: "❌";
+            vertical-align: inherit;
+            padding-right: 0.2rem;
+        }
+    }
+}

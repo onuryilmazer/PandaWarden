@@ -39,16 +39,28 @@ const AuthProvider = ({ children }) => {
         return false;
     }
 
-    const logoutHandler = () => {
+    const logoutHandler = (navigateToHomepage = true) => {
         removeTokenFromBrowserStorage();
         setToken(null);
-        navigate("/");
+        if (navigateToHomepage) navigate("/");
+    }
+
+    /**
+     * @returns {Error} an error object you can set into your state from async code and then throw in sync code
+     */
+    const expiredLoginErrorGenerator = (reason) => {
+        const error = new Error(`Login required. (${reason})`);
+        error.redirectTo = "/login";
+        error.redirectToDescription = "the login page";
+        error.action = () => logoutHandler(false);
+        return error;
     }
 
     const authObject = {
         token,
         loginHandler,
-        logoutHandler
+        logoutHandler,  
+        expiredLoginErrorGenerator,      
     };
 
     return (

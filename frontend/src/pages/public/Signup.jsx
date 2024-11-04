@@ -1,5 +1,6 @@
+import "./LoginSignup.css";
+
 import { useState } from "react";
-import "./Signup.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
 
@@ -7,6 +8,8 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 
 import { registerUser } from "../../services/RegistrationService.js";
+import ErrorMessage from "../../components/ErrorMessage.jsx";
+import SuccessMessage from "../../components/SuccessMessage.jsx";
 
 function Signup() {
     const auth = useAuth();
@@ -31,41 +34,39 @@ function Signup() {
         });
 
         if (!registrationRequest.ok) {
-            const message = registrationRequest.errors.map(e => e.msg || e).join("\n");
+            const message =  registrationRequest.error;
             setSignupError(message);
         }
         else {
             setSignupError("");
-            setSignupSuccess(`Registration succesful: \n ${registrationRequest.details.username} \n ${registrationRequest.details.email}. \n You will be redirected to the login page soon.`);
+            setSignupSuccess(`Registration succesful: \n ${registrationRequest.data.username} \n ${registrationRequest.data.email}. \n You will be redirected to the login page soon.`);
             setTimeout(() => navigate("/login"), 3000);
         }
     }
 
     return (
-        <div className="formWrapper">
-            <form onSubmit={handleSubmit}>
-                <h1>Login</h1>
+        <div className="page-container">
+            <div className="page-title"> <h1>Sign up</h1> </div>
+            <form className="form-wrapper" onSubmit={handleSubmit}>
 
-                <div>
+                <div className="input-with-custom-icon">
                     <FaUser className="icon" /> <input type='text' name="username" placeholder='Username'></input>
                 </div>
 
-                <div>
+                <div className="input-with-custom-icon">
                     <IoIosMail className="icon" /> <input type='email' name="email" placeholder='E-mail'></input>
                 </div>
 
-                <div>
+                <div className="input-with-custom-icon">
                     <FaLock className="icon" /> <input type='password' name="password" placeholder='Password'></input>
                 </div>
 
-                <button type='submit'>
-                    Register
-                </button>
+                <button type='submit'> Register </button>
 
-                <div className="error" hidden={signupError ? false : true}>{signupError}</div>
-                <div className="success" hidden={signupSuccess ? false : true}>{signupSuccess}</div>
+                {signupError && <ErrorMessage text={signupError} />}
+                {signupSuccess && <SuccessMessage text={signupSuccess} />}
 
-                <div className="signup">
+                <div className="signup-login-link">
                     Already have an account? <Link to={"/login"}>Log in</Link>
                 </div>
                 
