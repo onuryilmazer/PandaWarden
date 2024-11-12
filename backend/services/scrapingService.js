@@ -1,6 +1,6 @@
 import * as db from "./databaseService.js";
 import { ScraperPool } from "../../scrapers/ScraperPool.js";
-import { rm, rmdir } from "node:fs/promises";
+import { rm } from "node:fs/promises";
 
 class ScrapingService {
     scraperPoolInstance;
@@ -12,39 +12,55 @@ class ScrapingService {
     /**
      * Updates the database by finding new articles from the given source. Initially all articles are scraped, already existing ones are subsequently deleted.
      * @param {number} sourceId 
-     * @returns {Promise<{ok: boolean, numberOfNewArticles: number | undefined, error: error | undefined}>}
+     * @returns {Promise<number>} Number of new articles
      */
-    async updateSource(sourceId) {
-        let result = {};
-        try {
-            let scrapedData = await this._scrapeSource(sourceId);
+    async scrapeHomepage(sourceId) {        
+        if (!await this._sourceExists(sourceId)) throw new Error("Invalid source id.");
 
-            let newArticleCounter = 0;
-            for(let article of scrapedData.data) {
-                try {
-                    if (await this._articleIsAlreadyInDatabase(article, sourceId)) {
-                        await this._deleteArticleScreenshot(article);
-                        continue;
-                    }
+        const scrapeResults = await this._scrapeHomepage(sourceId);
 
-                    await this._saveArticleIntoDatabase(article, sourceId);
-                    newArticleCounter++;
-                }
-                catch (e) {
-                    console.log(e);
-                }                
+        let newArticleCounter = 0;
+        for(let article of scrapeResults.articles) {
+            if (await this._articleIsAlreadyInDatabase(article, sourceId)) {
+                await this._deleteArticleScreenshot(article);
+                continue;
             }
 
-            if (newArticleCounter === 0) await this._deleteEmptyScreenshotsFolder(scrapedData.dataFolder);
-            result.ok = true;
-            result.numberOfNewArticles = newArticleCounter;
-        }
-        catch (e) {
-            result.ok = false;
-            result.error = e.toString();
+            await this._saveArticleIntoDatabase(article, sourceId);
+            newArticleCounter++;
         }
 
-        return result;
+        return newArticleCounter;
+    }
+
+    async scrapeArticleDetails(articleId) {
+        let articleQuery = await db.query("SELECT source_id, details_url FROM articles WHERE id = $1", [articleId]);
+        const detailedArticle = await this._scrapeArticle(articleQuery.rows[0]["source_id"], {url: articleQuery.rows[0]["details_url"]});
+
+        await this._updateArticleDetails(detailedArticle);
+
+        return true;
+    }
+
+    async scrapeAllMissingArticleDetails(sourceId) {
+        if (!await this._sourceExists(sourceId)) throw new Error("Invalid source id.");
+
+        const urls = await db.query("SELECT details_url FROM articles WHERE details_description IS NULL AND source_id = $1",
+            [sourceId]
+        );
+
+        let promises = urls.rows.map(async row => {
+            const detailedArticle = await this._scrapeArticle(sourceId, {url: row.details_url});
+            await this._updateArticleDetails(detailedArticle);
+            return true;
+        });
+
+        promises = await Promise.allSettled(promises);
+
+        promises.forEach(p => {if (p.status === "rejected") console.log(p.reason)} );
+
+        const updatedArticleCount = promises.filter(p => p.status === "fulfilled").length;
+        return updatedArticleCount;
     }
 
     /**
@@ -70,16 +86,26 @@ class ScrapingService {
         return sourceName;
     }
 
+    async _sourceExists(sourceId) {
+        const sourceQuery = await db.query("SELECT * FROM sources WHERE id = $1", [sourceId]);
+        return sourceQuery.rows.length > 0;
+    }
+
     /**
      * Scrape a source for all the articles
      * @param {number} sourceId 
      * @returns {Promise<{}[]>} Array of objects with article title, description, and screenshot path.
      */
-    async _scrapeSource(sourceId) {
+    async _scrapeHomepage(sourceId) {
         const sourceName = await this._findSourceNameById(sourceId);
-        const result = await this.scraperPoolInstance.scrape(sourceName);
+        const result = await this.scraperPoolInstance.scrapeHomepage(sourceName);
 
-        if (!result.ok) throw result.error;
+        return result;
+    }
+
+    async _scrapeArticle(sourceId, article) {
+        const sourceName = await this._findSourceNameById(sourceId);
+        const result = await this.scraperPoolInstance.scrapeArticle(sourceName, article);
 
         return result;
     }
@@ -107,11 +133,18 @@ class ScrapingService {
      */
     async _saveArticleIntoDatabase(article, sourceId) {
         const insertionQuery = await db.query(
-            "INSERT INTO articles (source_id, catalog_title, catalog_description, catalog_time, catalog_screenshot_path, details_url) VALUES ($1, $2, $3, $4, $5, $6)",
-            [sourceId, article.title, article.description, article.time, article.screenshotPath, article.url]
+            "INSERT INTO articles (source_id, catalog_title, catalog_description, catalog_screenshot_path, details_title, details_description, details_aisummary, details_screenshot_path, details_url) " + 
+            "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9 )",
+            [sourceId, article.title, article.description, article.screenshotPath, article.detailsTitle, article.detailsDescription, article.aiSummary, article.detailsScreenshotPath, article.url]
         );
         
         return insertionQuery.rowCount > 0;
+    }
+
+    async _updateArticleDetails(article) {
+        await db.query("UPDATE articles SET details_title = $1, details_description = $2, details_screenshot_path = $3 WHERE details_url = $4",
+            [article.detailsTitle, article.detailsDescription, article.detailsScreenshotPath, article.url]
+        );
     }
 
     /**
@@ -122,21 +155,6 @@ class ScrapingService {
     async _deleteArticleScreenshot(article) {
         try {
             await rm(article.screenshotPath);
-            return true;
-        }
-        catch (e) {
-            return false;
-        }
-    }
-
-    /**
-     * Deletes empty folders. It should avoid deleting non-empty folders, but don't depend on that.
-     * @param {string} path 
-     * @returns {Promise<boolean>} true if folder is deleted.
-     */
-    async _deleteEmptyScreenshotsFolder(path) {
-        try {
-            await rmdir(path);
             return true;
         }
         catch (e) {

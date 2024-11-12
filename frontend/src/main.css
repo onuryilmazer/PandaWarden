@@ -54,6 +54,8 @@ body {
     gap: 3rem;
 
     & .page-title {
+      user-select: none;
+
       width: 100%;
       text-align: center;
 
@@ -73,12 +75,15 @@ body {
       gap: 1rem;
 
       & .block-header {
+        user-select: none;
+
         width: 100%;
 
         display: flex;
         flex-flow: row wrap;
-        justify-content: space-between;
+        justify-content: space-around;
         align-items: center;
+
       }
 
       & .block-row {
@@ -91,4 +96,15 @@ body {
 
   }
 
+}
+
+
+.zebra-lines {
+  &:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.288);
+  }
+
+  &:nth-child(odd) {
+    background-color: rgba(34, 56, 255, 0.048);
+  }
 }

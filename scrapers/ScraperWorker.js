@@ -1,6 +1,7 @@
 import "./utils/config.js";
 import { scrapers } from "./sources/index.js";
 import { chromium } from "playwright";
+import { error } from "./utils/logger.js";
 
 class ScraperWorker {
     browser;
@@ -13,38 +14,58 @@ class ScraperWorker {
     async initialize() {
         if (this.initialized) return;
 
-        this.browser = await chromium.launch({headless: process.env.HEADLESS === "false" ? false : true});
+        this.browser = await chromium.launch({headless: process.env.HEADLESS === "true"});
         this.context = await this.browser.newContext();
         this.initialized = true;
     }
     
     /**
      * Starts scraping content for the given source, initializing the scraper if it hasn't been initialized yet.
-     * @param {string} source The source that will be scraped for content
+     * @param {} details 
      * @returns {void} The scraping results will be sent as an IPC message to the parent process.
      */
-    async scrape(source) {
+    async scrape(details) {
         if (!this.initialized) await this.initialize();
     
-        if (!scrapers.has(source)) {
+        if (!scrapers.has(details.source)) {
             process.send({ 
                 ok: false,
-                error: new Error(`Source ${source} is not supported.`),
+                error: `Source ${details.source} is not supported.`,
             });
             return;
         }
         
-        const ScraperClass = scrapers.get(source);
+        const ScraperClass = scrapers.get(details.source);
         const scraperInstance = new ScraperClass(this.context);
-        const scrapingResults = await scraperInstance.scrape();
-    
-        process.send({
-            ok: true,
-            data: scrapingResults.articles,
-            dataFolder: scrapingResults.screenshotsFolder
-        });
+        let scrapingResults;
+        
+        try {
+            scrapingResults = await scraperInstance.scrape(details);
+            process.send({
+                ok: true,
+                data: scrapingResults,
+            });     
+        }
+        catch (e) {
+            process.send({
+                ok: false,
+                error: e.message,
+            });     
+        }        
     }
-    
+
+
+    handleMessage(message) {
+        switch (message.command) {
+            case "scrape":
+                this.scrape(message.details);
+                break;
+            case "close":
+                this.close();
+                break;
+        }
+    }
+
     /**
      * Closes the BrowserContext and Browser instances of this ScraperWorker, and subsequently terminates the current process.
      */
@@ -58,16 +79,4 @@ class ScraperWorker {
 const scraperWorker = new ScraperWorker();
 scraperWorker.initialize();
 
-process.on("message", message => {
-    switch (message.command) {
-        case "scrape": 
-            scraperWorker.scrape(message.source);
-            break;
-        case "close":
-            scraperWorker.close();
-            break;
-        case "initialize":
-            scraperWorker.initialize();
-            break;
-    }
-});
+process.on("message", (message) => scraperWorker.handleMessage(message));

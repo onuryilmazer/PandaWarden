@@ -52,11 +52,32 @@ class ScraperPool extends EventEmitter {
      * 
      * @param {string} source The name of the source that will be scraped for content.
      * @fires ScraperPool#jobQueueChanged
-     * @returns {Promise<{ok: true, data: [], dataFolder: string} | {ok: false, error: Error}>}
+     * @returns {Promise<{ok: true, data} | {ok: false, error: string}>}
      */
-    scrape(source) {
+    scrapeHomepage(source) {
+        return this._queueJob({target: "homepage", source});
+    }
+
+    /**
+     * 
+     * @param {string} source The name of the source that will be scraped for content
+     * @param {{url: string}} article Details of the article that needs to be scraped
+     * @fires ScraperPool#jobQueueChanged
+     * @returns {Promise<{ok: true, data} | {ok: false, error: string}>}
+     */
+    scrapeArticle(source, article) {
+        return this._queueJob({target: "article", source, article});
+    }
+
+    _queueJob(details) {
         let queuedJobPromise = new Promise((resolve, reject) => {
-            this.jobQueue.enqueue({source, resolve, reject});
+            this.jobQueue.enqueue({
+                command: "scrape", 
+                details,
+                resolve, 
+                reject
+            });
+
             this.nrOfActiveJobs++;
             this.emit("jobQueueChanged", this.nrOfActiveJobs);
         });
@@ -66,6 +87,10 @@ class ScraperPool extends EventEmitter {
         return queuedJobPromise;
     }
 
+    /**
+     * 
+     * @returns {string[]}
+     */
     availableSources() {
         return [...scrapers.keys()];
     }
@@ -82,13 +107,26 @@ class ScraperPool extends EventEmitter {
         if (!worker.connected || worker.killed) return this._processQueue();
 
         //dequeue a job:
-        let {source, resolve, reject} = this.jobQueue.dequeue();
+        let job = this.jobQueue.dequeue();
 
+        //send the job
+        worker.send({
+            command: job.command,
+            details: job.details,
+        });
+
+        //describe what needs to be done when a result arrives from the worker
         const successHandler = (message) => {
             this.nrOfActiveJobs--;
             this.emit("jobQueueChanged", this.nrOfActiveJobs);
 
-            resolve(message);
+            if (message.ok) {
+                job.resolve(message.data);
+            }
+            else {
+                job.reject(message.error);
+            }
+
             worker.removeListener("message", successHandler);
             worker.removeListener("error", failureHandler);
             worker.removeListener("exit", failureHandler);
@@ -106,10 +144,8 @@ class ScraperPool extends EventEmitter {
             this.nrOfActiveJobs--;          //TODO requeue jobs for a fixed number of times after failure
             this.emit("jobQueueChanged", this.nrOfActiveJobs);
 
-            reject({ 
-                ok: false,
-                error: `Worker failed with the following error: ${error}`,
-            });
+            job.reject(`Scraper worker failed with the following error: ${error}`);
+
             this._removeWorker(worker);
             this._addWorker();
             this._processQueue();
@@ -118,18 +154,13 @@ class ScraperPool extends EventEmitter {
         worker.on("message", successHandler);
         worker.on("error", failureHandler);
         worker.on("exit", failureHandler);
-
-        worker.send({
-            command: "scrape",
-            source: source,
-        });
     }
 
     /**
      * Destroys the scraper pool by killing all worker processes.
      */
     destroyPool() {
-        while(this.workers.size > 0) {
+        while (this.workers.size > 0) {
             this._removeWorker(this.workers.values().next().value);
         }
 

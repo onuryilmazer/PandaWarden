@@ -2,7 +2,6 @@ import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
 import { getToken } from "../services/LoginService";
-import { useNavigate } from "react-router-dom";
 
 const getTokenFromBrowserStorage = () => {
     let token = sessionStorage.getItem("token") || localStorage.getItem("token");
@@ -23,44 +22,22 @@ const removeTokenFromBrowserStorage = () => {
 
 const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(getTokenFromBrowserStorage());
-    const navigate = useNavigate();
 
     const loginHandler = async ({username, password, rememberMe}) => {
-        const tokenResponse = await getToken({username, password});
+        const token = await getToken({username, password});
 
-        if (tokenResponse.ok) {
-            saveTokenIntoBrowserStorage(tokenResponse.token, rememberMe);
-            setToken(tokenResponse.token);
-            navigate("/dashboard");
-            return true;
-        }
-        
-        console.log(tokenResponse.errors);
-        return false;
+        saveTokenIntoBrowserStorage(token, rememberMe);
+        setToken(token);
     }
 
-    const logoutHandler = (navigateToHomepage = true) => {
+    const logoutHandler = () => {
         removeTokenFromBrowserStorage();
         setToken(null);
-        if (navigateToHomepage) navigate("/");
     }
-
-    /**
-     * @returns {Error} an error object you can set into your state from async code and then throw in sync code
-     */
-    const expiredLoginErrorGenerator = (reason) => {
-        const error = new Error(`Login required. (${reason})`);
-        error.redirectTo = "/login";
-        error.redirectToDescription = "the login page";
-        error.action = () => logoutHandler(false);
-        return error;
-    }
-
     const authObject = {
         token,
         loginHandler,
         logoutHandler,  
-        expiredLoginErrorGenerator,      
     };
 
     return (
@@ -74,4 +51,6 @@ const useAuth = () => {
     return useContext(AuthContext);
 }
 
+
+// eslint-disable-next-line react-refresh/only-export-components
 export {AuthProvider, useAuth};

@@ -4,25 +4,50 @@ import scrapingService from "../services/scrapingService.js";
 
 const router = express.Router();
 
-router.get("/denemeAuthReq", (req, res) => {
-    console.log("here!");
-    res.json(req.token);
-})
-
-router.get("/:sourceId", 
-    param("sourceId").trim().notEmpty().isInt().withMessage("Invalid source ID."),    
-    async (req, res) => {
+router.post("/source/:sourceId", 
+    param("sourceId").trim().notEmpty().isInt().withMessage("Invalid source ID."),
+    async (req, res, next) => {
         const validationErrors = validationResult(req);
-        if (!validationErrors.isEmpty()) {
-            return res.status(400).json({
-                ok: false,
-                error: validationErrors.array()
-            });
-        }
+        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
 
-        const updateResult = await scrapingService.updateSource(req.params.sourceId);
+        try {
+            const updateResult = await scrapingService.scrapeHomepage(req.params.sourceId);
+            return res.status(201).json(updateResult);
+        }
+        catch (e) {
+            return next(e);
+        }
+});
+
+router.post("/source/:sourceId/missingArticleDetails",
+    param("sourceId").trim().notEmpty().isInt().withMessage("Invalid source ID."),    
+    async (req, res, next) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
+
+        try {
+            const updateResult = await scrapingService.scrapeAllMissingArticleDetails(req.params.sourceId);
+            return res.status(201).json(updateResult);
+        }
+        catch (e) {
+            return next(e);
+        }
         
-        return res.status(updateResult.ok ? 201 : 400).json(updateResult);
+});
+
+router.post("/article/:id", 
+    param("id").trim().notEmpty().isInt().withMessage("Invalid article ID."),    
+    async (req, res, next) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
+
+        try {
+            const updateResult = await scrapingService.scrapeArticleDetails(req.params.id);
+            return res.status(updateResult ? 201 : 400).json(updateResult);
+        }
+        catch (e) {
+            return next(e);
+        }  
 });
 
 export default router;

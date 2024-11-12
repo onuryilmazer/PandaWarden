@@ -26,21 +26,19 @@ function Signup() {
 
         const elements = event.currentTarget.elements;
 
-        //Login handler handles redirection in case of successful log in
-        const registrationRequest = await registerUser({
-            username: elements.username.value, 
-            email: elements.email.value,
-            password: elements.password.value, 
-        });
+        try {
+            await registerUser({
+                username: elements.username.value, 
+                email: elements.email.value,
+                password: elements.password.value, 
+            });
 
-        if (!registrationRequest.ok) {
-            const message =  registrationRequest.error;
-            setSignupError(message);
-        }
-        else {
             setSignupError("");
-            setSignupSuccess(`Registration succesful: \n ${registrationRequest.data.username} \n ${registrationRequest.data.email}. \n You will be redirected to the login page soon.`);
+            setSignupSuccess(`Registration succesful: \n You will be redirected to the login page soon.`);
             setTimeout(() => navigate("/login"), 3000);
+        }
+        catch (e) {
+            setSignupError(e.message);
         }
     }
 

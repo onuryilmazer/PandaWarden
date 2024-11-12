@@ -4,30 +4,42 @@ async function checkAuthToken(req, res, next) {
     const authHeader = req.get("Authorization");
 
     if (!authHeader) {
-        return res.status(400).json({
-            ok: false,
-            error: "Authorization header missing."
-        });
+        res.status(400);
+        return next(new Error("Authorization header is missing."));
     }
 
     const authHeaderParts = authHeader.split(" ");
 
     if (authHeaderParts.length != 2 || authHeaderParts[0] !== "Bearer") {
-        return res.status(400).json({
-            ok: false,
-            error: "Malformed authorization header."
-        });
+        res.status(400);
+        return next(new Error("Malformed authorization header."));
     }
 
-    const authResult = await userService.verifyAuthToken(authHeaderParts[1]);
-
-    if (authResult.ok) {
-        req.token = authResult.token;
+    try {
+        req.token = await userService.verifyAuthToken(authHeaderParts[1]);
         return next();
     }
-    else {
-        return res.status(401).json(authResult);
+    catch (e) {
+        res.status(401);
+        return next(e);
     }
 }
 
-export default checkAuthToken;
+async function checkAdminRights(req, res, next) {
+    async function roleChecker(error) {
+        if (error) return next(error);
+
+        if (await userService.usernameIsBeingUsed(req.token.username) 
+            && await userService.getUserRole(req.token.username) === "admin") {
+                next();
+        }
+        else {
+            res.status(401);
+            next(new Error("Insufficient rights"));
+        }
+    }
+
+    await checkAuthToken(req, res, roleChecker);
+}
+
+export {checkAuthToken, checkAdminRights};

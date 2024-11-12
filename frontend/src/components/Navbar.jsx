@@ -1,11 +1,17 @@
 import "./Navbar.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.svg";
 
 function Navbar() {
     const auth = useAuth();
+    const navigate = useNavigate();
     const loggedIn = !!auth.token;
+
+    const logoutHandler = () => {
+        auth.logoutHandler();
+        navigate("/");
+    }
 
     return(
         <div className="navbar">
@@ -20,7 +26,7 @@ function Navbar() {
                     loggedIn ?
                         <>
                             <NavLink to={"/account"}>Account</NavLink>
-                            <NavLink onClick={auth.logoutHandler}>Sign Out</NavLink>
+                            <NavLink onClick={logoutHandler}>Sign Out</NavLink>
                         </>
                         :
                         <>

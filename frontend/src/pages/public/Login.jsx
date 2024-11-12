@@ -4,9 +4,10 @@ import { useRef, useState } from "react";
 import { FaFish, FaUser, FaLock } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Tooltip from "../../components/Tooltip";
 import ErrorMessage from "../../components/ErrorMessage";
+import { AlreadyLoggedInError } from "../../services/ErrorClasses";
 
 const TOOLTIP_TEXT = {
     rememberMe: "If you check this box, your credentials will be persisted in your browser's \"Local Storage\", and you will stay logged in until you manually sign out.",
@@ -14,13 +15,12 @@ const TOOLTIP_TEXT = {
 
 function Login() {
     const auth = useAuth();
-    const [loginError, setLoginError] = useState("");
+    const navigate = useNavigate();
     const [loggingIn, setLoggingIn] = useState(false);
+    const [loginError, setLoginError] = useState("");
     const loginErrorTimeoutRef = useRef(null);
 
-    if (auth.token) {
-        throw new Error("You are already logged in!");
-    }
+    if (auth.token) throw new AlreadyLoggedInError();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -29,18 +29,20 @@ function Login() {
         const elements = event.currentTarget.elements;
 
         //Login handler handles redirection in case of successful log in
-        const loggedIn = await auth.loginHandler({
-            username: elements.username.value, 
-            password: elements.password.value, 
-            rememberMe: elements.rememberme.checked
-        });
+        try {
+            await auth.loginHandler({
+                username: elements.username.value, 
+                password: elements.password.value, 
+                rememberMe: elements.rememberme.checked
+            });
 
-        if (!loggedIn) {
+            navigate("/dashboard");
+        }
+        catch (e) {
             setLoggingIn(false);
+            setLoginError(e.message);
 
-            setLoginError("Invalid username and/or password.");
             if (loginErrorTimeoutRef.current != null) clearTimeout(loginErrorTimeoutRef.current);
-
             loginErrorTimeoutRef.current = setTimeout(() => setLoginError(""), 3000);
         }
     }

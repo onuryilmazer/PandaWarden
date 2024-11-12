@@ -4,28 +4,54 @@ import userService from "../services/userService.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.status(200).json({hello: "world"});
-});
-
 router.post("/login", 
     body("username").trim().notEmpty().withMessage("Username can't be empty."),
     body("password").trim().notEmpty().withMessage("Password can't be empty."),
     async (req, res, next) => {
         const validationErrors = validationResult(req);
-        if (!validationErrors.isEmpty()) {
-            return res.status(400).json({
-                ok: false,
-                error: validationErrors.array()
+        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
+
+        try {
+            const token = await userService.createAuthToken({
+                username: req.body.username, 
+                password: req.body.password
             });
+            
+            return res.status(200).json(token);        
         }
-
-        const authResult = await userService.createAuthToken({
-            username: req.body.username, 
-            password: req.body.password
-        });
-
-        return res.status(authResult.ok ? 200 : 401).json(authResult);        
+        catch (e) {
+            res.status(401);
+            return next(e);
+        }
 });
+
+router.post("/register", 
+    body("username", "Invalid username")
+        .trim()
+        .notEmpty().withMessage("Username can't be empty")
+        .isLength({min: 4, max: 30}).withMessage("Username needs to be between 4-30 characters"),
+    body("email", "Invalid e-mail")
+        .trim()
+        .notEmpty().withMessage("E-mail can't be empty")
+        .isLength({max: 100}).withMessage("E-mails must be shorter than 100 characters")
+        .isEmail(),
+    body("password", "Invalid password")
+        .trim()
+        .notEmpty().withMessage("Password can't be empty")
+        .isLength({min: 6, max: 100}).withMessage("Passwords must be at least 6 and at most 100 characters long"),
+
+    async (req, res, next) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
+
+        try {
+            const result = await userService.registerUser({username: req.body.username, password: req.body.password, email: req.body.email});
+            return res.status(201).json(result);
+        }
+        catch (e) {
+            return next(e);
+        }
+    }
+);
 
 export default router;

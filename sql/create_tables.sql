@@ -3,6 +3,7 @@ CREATE TABLE users (
   username VARCHAR UNIQUE NOT NULL,
   email VARCHAR UNIQUE NOT NULL,
   password VARCHAR NOT NULL,
+  role VARCHAR NOT NULL DEFAULT 'user',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP
 );
@@ -18,14 +19,12 @@ CREATE TABLE sources (
 CREATE TABLE articles (
   id SERIAL PRIMARY KEY,
   source_id INTEGER,
-  scraped_for INTEGER,
   catalog_title VARCHAR NOT NULL,
   catalog_description TEXT,
-  catalog_time VARCHAR,
   catalog_screenshot_path VARCHAR,
   details_title VARCHAR,
   details_description TEXT,
-  details_time VARCHAR,
+  details_aisummary TEXT,
   details_screenshot_path VARCHAR,
   details_url VARCHAR NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -38,7 +37,7 @@ CREATE TABLE article_details_translations (
   article_id INTEGER NOT NULL,
   title VARCHAR,
   description TEXT,
-  time VARCHAR,
+  aisummary TEXT,
   translation_rating DOUBLE PRECISION,
   rated_by_count INTEGER,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -53,7 +52,6 @@ CREATE TABLE article_catalog_translations (
   article_id INTEGER NOT NULL,
   title VARCHAR,
   description TEXT,
-  time VARCHAR,
   translation_rating DOUBLE PRECISION,
   rated_by_count INTEGER,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -97,7 +95,6 @@ CREATE TABLE scraping_errors (
   page_html text
 );
 
-ALTER TABLE articles ADD FOREIGN KEY (scraped_for) REFERENCES users (id);
 ALTER TABLE articles ADD FOREIGN KEY (source_id) REFERENCES sources (id);
 
 ALTER TABLE sources ADD FOREIGN KEY (language_id) REFERENCES languages (id);

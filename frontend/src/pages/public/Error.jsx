@@ -3,16 +3,28 @@ import { useNavigate, useRouteError } from "react-router-dom";
 
 import "./Error.css";
 import ErrorMessage from "../../components/ErrorMessage";
+import { useAuth } from "../../context/AuthContext";
+import { AuthenticationError, ConnectionError, LoginExpiredError, LoginRequiredError } from "../../services/ErrorClasses";
 
 function Error() {
+    const auth = useAuth();
     const navigate = useNavigate();
     const error = useRouteError();
     const [remainingSeconds, setRemainingSeconds] = useState(10);
     
+    if (error instanceof AuthenticationError || error instanceof LoginExpiredError || error instanceof LoginRequiredError) {
+        error.redirectTo = "/login";
+        error.redirectToDescription = "the login page";
+        error.action = () => auth.logoutHandler(false);
+    }
+    else if (error instanceof ConnectionError) {
+        error.redirectTo = "/";
+        error.redirectToDescription = "homepage";
+    }
 
     useEffect(() => {
         let cancel = false;
-        const redirectTo = error.redirectTo ? error.redirectTo : -1;
+        const redirectTo = error.redirectTo ?? -1;
 
         setTimeout(() => {
             if (cancel) return;

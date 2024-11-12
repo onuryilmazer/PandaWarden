@@ -1,0 +1,20 @@
+.user-details-container {
+    font-size: large;
+
+    & .row {
+        display: flex;
+        flex-flow: row wrap;
+
+        & p:first-child {
+            width: 12rem;
+        }
+
+        & p:nth-child(2) {
+            
+        }
+
+        &:nth-child(odd) {
+            
+        }
+    }
+}

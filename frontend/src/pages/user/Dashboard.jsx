@@ -4,6 +4,8 @@ import { getArticles } from "../../services/ArticleService";
 import "./Dashboard.css";
 import ErrorMessage from "../../components/ErrorMessage";
 import PageSwitcher from "../../components/PageSwitcher";
+import { Link } from "react-router-dom";
+import { LoginExpiredError } from "../../services/ErrorClasses";
 
 function Dashboard() {
     return(
@@ -35,7 +37,7 @@ function RecurringScans() {
 
 function Scan() {
     return(
-        <div className="scan-entry">
+        <div className="scan-entry zebra-lines">
             <span>Name</span>
             <span>Date: 01.01.24</span>
             <span>Results: 0 New / 0 Total</span>
@@ -49,9 +51,9 @@ function RecentArticles() {
     const [page, setPage] = useState(1);
     const [numberOfPages, setNumberOfPages] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
-    const [thrownError, setThrownError] = useState(null);  //set from async function and thrown again, so the error boundary can catch it.
     const recentArticlesRef = useRef(null);
-
+    
+    const [thrownError, setThrownError] = useState(null);  //set from async function and thrown again, so the error boundary can catch it.
     if (thrownError) throw thrownError;
 
     useEffect(() => {
@@ -62,18 +64,14 @@ function RecentArticles() {
         getArticles({offset: offset, limit: limit, token: auth.token}).then(result => {
             if (discard) return;
 
-            if (result.ok) {
-                setArticles(result.articles);
-                setNumberOfPages(result.numberOfPages);
-            }
-            else {
-                if (result.status == 401) {
-                    setThrownError(auth.expiredLoginErrorGenerator(result.error));
-                    return;
-                }
+            setArticles(result.articles);
+            setNumberOfPages(result.numberOfPages);
+            setThrownError(null);
+        }).catch(e => {         
+            setErrorMessage(e.message);
+            setArticles([]);
 
-                setErrorMessage(result.error);
-            }
+            if (e instanceof LoginExpiredError) setThrownError(e);  //rethrow
         });
 
         return () => discard = true;
@@ -93,6 +91,7 @@ function RecentArticles() {
 
 function Article({article}) {
     return(
+        <Link to={`/dashboard/article/${article.id}`} className="article-wrapper-link zebra-lines">
         <div className="article">
             <div className="thumbnail">
                 <img src={article.catalog_screenshot_path}></img>
@@ -104,6 +103,7 @@ function Article({article}) {
                 <div className="article-source">From: {article.source_name}</div>
             </div>
         </div>
+        </Link>
     )
 }
 
