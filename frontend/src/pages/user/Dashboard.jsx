@@ -67,6 +67,7 @@ function RecentArticles() {
             setArticles(result.articles);
             setNumberOfPages(result.numberOfPages);
             setThrownError(null);
+            setErrorMessage("");
         }).catch(e => {         
             setErrorMessage(e.message);
             setArticles([]);

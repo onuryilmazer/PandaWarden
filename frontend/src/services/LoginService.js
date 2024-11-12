@@ -14,7 +14,7 @@ async function getToken({username, password}) {
 
     const body = await header.json().catch(() => null);
     
-    if (header.status == 401) throw new AuthenticationError();
+    if (header.status == 401) throw new AuthenticationError(body);
     else if (!header.ok) throw new HttpError(body ?? `Login failed. \n ${header.statusText}`, header.status);
 
     return body;

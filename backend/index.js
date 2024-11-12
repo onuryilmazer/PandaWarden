@@ -14,6 +14,7 @@ import userRouter from "./routes/user.js";
 import scrapeRouter from "./routes/scrape.js";
 import articlesRouter from "./routes/articles.js";
 import adminRouter from "./routes/admin.js";
+import { DatabaseError } from "./services/customErrors.js";
 
 app.use("/admin", checkAdminRights, adminRouter);
 
@@ -29,6 +30,11 @@ app.use("/", express.static("public"));
 //error handler
 app.use((err, req, res, next) => {
     if (!res.statusCode || res.statusCode == 200) res.status(400);
+    else if (err instanceof DatabaseError) res.status(500);
+
+    if (err instanceof AggregateError) {
+        return res.json(err.errors.map(e => e.message).join("\n"));
+    }
 
     res.json(err.message);
 })

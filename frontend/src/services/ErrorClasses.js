@@ -14,8 +14,8 @@ class HttpError extends Error {
 }
 
 class AuthenticationError extends HttpError {
-    constructor() {
-        super("Authentication failed.", 401);
+    constructor(message) {
+        super(`Authentication failed. ${message ? "\n" + message : ""}`, 401);
         this.name = "AuthenticationError";
     }
 }

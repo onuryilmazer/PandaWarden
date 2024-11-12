@@ -1,6 +1,6 @@
 //TODO complete custom validators.
 
-import { body } from "express-validator";
+import { body, validationResult } from "express-validator";
 
 //email in use
 
@@ -8,7 +8,7 @@ import { body } from "express-validator";
 
 
 //raw user input
-userInputValidators = {
+const userInputValidators = {
     email: () => {
         return body("email", "Invalid e-mail")
         .trim()
@@ -17,5 +17,18 @@ userInputValidators = {
     }
 };
 
+const checkExistingValidators = (req, res, next) => {
+    const validationErrors = validationResult(req);
 
-export { userInputValidators };
+    if (!validationErrors.isEmpty()) {
+        res.status(400);
+        return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
+    }
+    else {
+        return next();
+    }
+}
+
+
+
+export { userInputValidators, checkExistingValidators };

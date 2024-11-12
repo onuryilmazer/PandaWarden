@@ -1,16 +1,15 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import userService from "../services/userService.js";
+import { checkExistingValidators } from "../middleware/customValidators.js";
 
 const router = express.Router();
 
 router.post("/login", 
     body("username").trim().notEmpty().withMessage("Username can't be empty."),
     body("password").trim().notEmpty().withMessage("Password can't be empty."),
+    checkExistingValidators,
     async (req, res, next) => {
-        const validationErrors = validationResult(req);
-        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
-
         try {
             const token = await userService.createAuthToken({
                 username: req.body.username, 
@@ -39,11 +38,9 @@ router.post("/register",
         .trim()
         .notEmpty().withMessage("Password can't be empty")
         .isLength({min: 6, max: 100}).withMessage("Passwords must be at least 6 and at most 100 characters long"),
+    checkExistingValidators,
 
     async (req, res, next) => {
-        const validationErrors = validationResult(req);
-        if (!validationErrors.isEmpty()) return next(new Error(validationErrors.array().map(e => e.msg).join("\n") ));
-
         try {
             const result = await userService.registerUser({username: req.body.username, password: req.body.password, email: req.body.email});
             return res.status(201).json(result);
