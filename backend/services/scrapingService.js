@@ -9,6 +9,11 @@ class ScrapingService {
         this.scraperPoolInstance = new ScraperPool();
     }
 
+    async availableSources() {
+        const sourceQuery = await db.query("SELECT distinct id FROM sources");
+        return sourceQuery.rows.map(row => row.id);
+    }
+
     /**
      * Updates the database by finding new articles from the given source. Initially all articles are scraped, already existing ones are subsequently deleted.
      * @param {number} sourceId 
