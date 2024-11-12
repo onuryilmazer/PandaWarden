@@ -69,8 +69,9 @@ CREATE TABLE monitoring_requests (
   id SERIAL PRIMARY KEY,
   owner INTEGER,
   active BOOLEAN,
-  frequency_minutes INTEGER,
   execution_count INTEGER,
+  repeat_interval INTERVAL,
+  last_execution TIMESTAMP,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP
 );
