@@ -23,7 +23,7 @@ import Article from './pages/user/Article.jsx';
 import CreateScan from './pages/user/CreateScan.jsx';
 import ProtectedPage from './components/ProtectedPage.jsx';
 
-import "./util/fixBackground.js";
+//import "./util/fixBackground.js";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

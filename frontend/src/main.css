@@ -2,11 +2,12 @@
 
 body {
   /* background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 90, 121, 1) 35%, rgba(0, 212, 255, 1) 100%); */
-  background-image: url("./assets/bg.jpg");
+  /* background-image: url("./assets/bg.jpg");
   background-position: bottom left;
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed;
+  background-attachment: fixed; */
+  
   margin: 0;
   padding: 0;
   display: flex;
@@ -22,7 +23,19 @@ body {
   height: 100vh;
 }
 
+#background-container {
+  background: url("./assets/bg.jpg");
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+}
+
 #root {
+  position: absolute;
+
   box-sizing: border-box;
   width: 100%;
 
