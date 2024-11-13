@@ -4,9 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "cross-env PLAYWRIGHT_BROWSERS_PATH=0 node index.js",
-    "dev": "cross-env PLAYWRIGHT_BROWSERS_PATH=0 nodemon index.js",
-    "playwright-init": "cross-env PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install --with-deps chromium"
+    "start": "cross-env node index.js",
+    "dev": "cross-env nodemon index.js",
+    "playwright-init": "cross-env npx playwright install --with-deps chromium"
   },
   "author": "",
   "license": "ISC",
