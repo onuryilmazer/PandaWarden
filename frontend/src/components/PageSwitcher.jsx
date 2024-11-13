@@ -30,8 +30,6 @@ function PageSwitcher({currentPage, setCurrentPage, numberOfPages, scrollOnSwitc
     let smallestPageVisible = Math.max(1, currentPage - leftOffset);
     let biggestPageVisible = Math.min(numberOfPages, currentPage + rightOffset);
 
-    console.log(`smallestPageVisible: ${smallestPageVisible}, biggestPageVisible: ${biggestPageVisible}, currentPage: ${currentPage}, numberOfPages: ${numberOfPages}, leftOffset: ${leftOffset}, rightOffset: ${rightOffset}`);
-
     //try to reach the desired nr of buttons
     const numberOfVisibleButtons = biggestPageVisible - smallestPageVisible + 1;
 
