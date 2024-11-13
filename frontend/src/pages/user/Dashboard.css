@@ -23,12 +23,13 @@
         padding: 1rem;
 
         display: flex;
-        flex-flow: row wrap;
+        flex-flow: row nowrap;
         width: 100%;
+        max-height: 20rem;
 
         @media screen and (max-width: 45rem) {
-            flex-direction: column;
-            
+            flex-flow: column nowrap;
+            max-height: none;
         }
 
         &:hover {
@@ -39,16 +40,17 @@
             flex: 1;
 
             display: flex;
-            flex-flow: column nowrap;
             justify-content: center;
             align-items: center;
 
-            max-height: 15rem;
-            /* min-width: 12rem; */
-
+            
             & img {
                 max-width: 100%;
                 max-height: 100%;
+
+                @media screen and (max-width: 45rem) {
+                    max-height: 15rem;
+                }
             }
         }
 
@@ -60,8 +62,6 @@
             flex-flow: column nowrap;
             justify-content: space-evenly;
             gap: 1rem;
-
-            /* min-width: 12rem; */
 
             & .article-title {
                 font-size: large;
