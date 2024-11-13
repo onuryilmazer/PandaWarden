@@ -23,7 +23,7 @@ function RecurringScans() {
             <div className="block-header">
                 <h2>Monitoring requests</h2>
                 <div className="options">
-                    <button>➕</button>
+                    <Link to={"/createScan"}><button>➕</button></Link>
                     <button>🖊️</button>
                 </div>
                 

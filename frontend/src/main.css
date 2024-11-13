@@ -104,6 +104,8 @@ body {
 
         display: flex;
         flex-flow: row wrap;
+        align-items: center;
+        gap: 1rem;
       }
     }
 
