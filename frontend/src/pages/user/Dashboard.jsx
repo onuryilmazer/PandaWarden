@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { getArticles } from "../../services/ArticleService";
+import { getArticles, getNextScrapeTime } from "../../services/ArticleService";
 import "./Dashboard.css";
 import ErrorMessage from "../../components/ErrorMessage";
 import PageSwitcher from "../../components/PageSwitcher";
@@ -12,7 +12,43 @@ function Dashboard() {
         <div className="page-container">
             <div className="page-title"> <h1>Dashboard</h1> </div>
             <RecurringScans />
+            <ScrapeTimer />
             <RecentArticles />
+        </div>
+    )
+}
+
+function ScrapeTimer() {
+    const auth = useAuth();
+
+    const [remainingSeconds, setRemainingSeconds] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        let discard = false;
+        let intervalId = null;
+        
+        getNextScrapeTime({token: auth.token})
+            .then(result => { if(!discard) {                
+                intervalId = setInterval(() => {
+                    setRemainingSeconds(Math.floor((new Date(result) - new Date()) / 1000));
+                }, 1000);
+
+            } })
+            .catch(e => { setErrorMessage(e.message); });
+
+        return () => {discard = true; clearInterval(intervalId);};
+    }, [auth.token]);
+
+    return(
+        <div className="block-container">
+            <div className="block-header"> <h2>Collection timer</h2> </div>
+            <div className="block-row">
+                {
+                    errorMessage ? <ErrorMessage text={errorMessage} /> :
+                    <p>Next collection in: {remainingSeconds ? <span>{Math.floor(remainingSeconds / 60)}m {remainingSeconds%60}s</span> : "Loading..."} </p>
+                }
+            </div>
         </div>
     )
 }

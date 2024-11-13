@@ -40,4 +40,21 @@ async function getArticle({id, token}) {
     return body;
 }
 
-export { getArticles, getArticle };
+async function getNextScrapeTime({token}) {
+    const header = await fetch(`/scrape/nextInvocation`, {
+        method: "GET",
+        headers: {"Authorization": `Bearer ${token}`}
+    }).catch(() => new ConnectionError());
+
+    if (header instanceof ConnectionError) throw header;
+
+    const body = await header.json().catch(() => null);
+
+    if (!header.ok) {
+        if (header.status === 401) throw new LoginExpiredError();
+        else throw new HttpError(body ?? `Could not fetch time to next scraping. \n (${header.statusText})`, header.status);
+    }
+
+    return body;
+}
+export { getArticles, getArticle, getNextScrapeTime };
