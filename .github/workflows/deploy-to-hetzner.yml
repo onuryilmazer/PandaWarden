@@ -33,11 +33,6 @@ jobs:
         run: |
           npm ci
           npm run playwright-init
-          
-      - name: Setup backend and scraper environments
-        run: |
-          echo "${{ secrets.BACKEND_ENV_FILE }}" >> ./backend/.env
-          echo "${{ secrets.SCRAPERS_ENV_FILE }}" >> ./scrapers/.env
       
       - name: Deploy to hetzner
         run: |
