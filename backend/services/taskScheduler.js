@@ -3,7 +3,7 @@ import scrapingService from "./scrapingService.js";
 
 class TaskScheduler {
     constructor() {
-        this.scrapingTask = scheduleJob("0,15,30,45 * * * *", async () => {
+        this.scrapingTask = scheduleJob("0,30 * * * *", async () => {
             console.log("Scraping task started.");
 
             const sourceIds = await scrapingService.availableSources();
