@@ -46,11 +46,11 @@ function Scan() {
 }
 
 function RecentArticles() {
-    const restoredPage = parseInt(sessionStorage.getItem("recentArticlesPage")) || 1;
+    if (!sessionStorage.getItem("recentArticlesPage")) sessionStorage.setItem("recentArticlesPage", 1);
 
     const auth = useAuth();
     const [articles, setArticles] = useState([]);
-    const [page, setPage] = useState(restoredPage);
+    const [page, setPage] = useState(parseInt(sessionStorage.getItem("recentArticlesPage")));
 
     const setPageWrapper = (page) => {
         setPage(page);
