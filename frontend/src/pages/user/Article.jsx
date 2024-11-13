@@ -28,7 +28,7 @@ function Article() {
                 <Link to={-1}>Go back to my dashboard</Link>
                 <div>
                     <p>Source: {article?.source_name}</p>
-                    <p>Date: {article?.created_at}</p>
+                    <p>Collected at: {article?.created_at && new Date(article?.created_at).toLocaleString()}</p>
                 </div>
 
             </div>
