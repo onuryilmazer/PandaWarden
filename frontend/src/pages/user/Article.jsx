@@ -31,8 +31,10 @@ function Article() {
                     <p>Date: {article?.created_at}</p>
                 </div>
 
-                <div>Chatgpt summary: {article?.details_aisummary} </div>
+            </div>
 
+            <div className="block-container">
+                <div>AI summary of the article: {article?.details_aisummary ?? "Not available."} </div>
             </div>
 
             <div className="block-container">
@@ -43,7 +45,7 @@ function Article() {
 
                 <div>
                     <label>
-                        Article language 
+                        Article language: 
                         <select>
                             <option>asd</option>
                         </select> 
@@ -63,8 +65,6 @@ function Article() {
             </div>
         </div>
     )
-
-
 }
 
 export default Article;
