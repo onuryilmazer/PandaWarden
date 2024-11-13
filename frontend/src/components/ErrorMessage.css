@@ -11,6 +11,8 @@
     & .error-message-text {
         padding: 1rem;
         color: white;
+
+        white-space: pre-line;
     }
 
     & .error-message-icon {
