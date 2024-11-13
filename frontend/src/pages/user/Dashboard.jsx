@@ -46,13 +46,27 @@ function Scan() {
 }
 
 function RecentArticles() {
+    const restoredPage = parseInt(sessionStorage.getItem("recentArticlesPage")) || 1;
+
     const auth = useAuth();
     const [articles, setArticles] = useState([]);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(restoredPage);
+
+    const setPageWrapper = (page) => {
+        setPage(page);
+        sessionStorage.setItem("recentArticlesPage", page);
+    }
+
     const [numberOfPages, setNumberOfPages] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const recentArticlesRef = useRef(null);
-    
+
+    if (recentArticlesRef.current && sessionStorage.getItem("recentArticlesPage")) { 
+            setTimeout(() => {
+                recentArticlesRef.current.scrollIntoView({behavior: "smooth"});
+            }, 250);
+    }
+
     const [thrownError, setThrownError] = useState(null);  //set from async function and thrown again, so the error boundary can catch it.
     if (thrownError) throw thrownError;
 
@@ -81,10 +95,10 @@ function RecentArticles() {
     return(
         <div className="block-container" ref={recentArticlesRef}>
             <div className="block-header"> <h2>Recent articles</h2> </div>
-            <PageSwitcher currentPage={page} setCurrentPage={setPage} numberOfPages={numberOfPages} scrollOnSwitchRef={recentArticlesRef}/>
+            <PageSwitcher currentPage={page} setCurrentPage={setPageWrapper} numberOfPages={numberOfPages} scrollOnSwitchRef={recentArticlesRef}/>
             { errorMessage && <ErrorMessage text={errorMessage} /> }
             { articles.map(article => <Article key={article.id} article={article} />) }
-            <PageSwitcher currentPage={page} setCurrentPage={setPage} numberOfPages={numberOfPages} scrollOnSwitchRef={recentArticlesRef}/>
+            <PageSwitcher currentPage={page} setCurrentPage={setPageWrapper} numberOfPages={numberOfPages} scrollOnSwitchRef={recentArticlesRef}/>
         </div>
     )
 }
