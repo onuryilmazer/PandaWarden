@@ -45,21 +45,29 @@ function PageSwitcher({currentPage, setCurrentPage, numberOfPages, scrollOnSwitc
     }
 
 
-    let paginationButtons = [];
-    paginationButtons.push(<button key={"<<"} className="pagination-button" onClick={() => pageSwitchHandler(1)} disabled={currentPage === 1}>{"<<"}</button>);
-    paginationButtons.push(<button key={"<"} className="pagination-button" onClick={() => pageSwitchHandler(currentPage-1)} disabled={currentPage === 1}>{"<"}</button>);
+    let paginationButtons_left = [], paginationButtons_mid = [], paginationButtons_right = [];
+    paginationButtons_left.push(<button key={"<<"} className="pagination-button" onClick={() => pageSwitchHandler(1)} disabled={currentPage === 1}>{"<<"}</button>);
+    paginationButtons_left.push(<button key={"<"} className="pagination-button" onClick={() => pageSwitchHandler(currentPage-1)} disabled={currentPage === 1}>{"<"}</button>);
 
     for(let i = smallestPageVisible; i <= biggestPageVisible; i++) {
         const className = `pagination-button ${i === currentPage ? "active" : ""}`;
-        paginationButtons.push( <button key={i} className={className} onClick={() => pageSwitchHandler(i)} >{i}</button> );
+        paginationButtons_mid.push( <button key={i} className={className} onClick={() => pageSwitchHandler(i)} >{i}</button> );
     }
 
-    paginationButtons.push(<button key={">"} className="pagination-button" onClick={() => pageSwitchHandler(currentPage+1)} disabled={currentPage === numberOfPages}>{">"}</button>);
-    paginationButtons.push(<button key={">>"} className="pagination-button" onClick={() => pageSwitchHandler(numberOfPages)} disabled={currentPage === numberOfPages} >{">>"}</button>);
+    paginationButtons_right.push(<button key={">"} className="pagination-button" onClick={() => pageSwitchHandler(currentPage+1)} disabled={currentPage === numberOfPages}>{">"}</button>);
+    paginationButtons_right.push(<button key={">>"} className="pagination-button" onClick={() => pageSwitchHandler(numberOfPages)} disabled={currentPage === numberOfPages} >{">>"}</button>);
 
     return (
         <div className="pagination-container">
-            { paginationButtons }
+            <div className="prev">
+                { paginationButtons_left }
+            </div>
+            <div className="pages">
+                { paginationButtons_mid }
+            </div>
+            <div className="next">
+                { paginationButtons_right }
+            </div>
         </div>
     );
 }
