@@ -3,7 +3,8 @@ import "./ErrorMessage.css";
 function ErrorMessage({text}) {
     return (
         <div className="error-message-container">
-            <span className="error-message-text">{text}</span>
+            <div className="error-message-icon">⚠</div>
+            <div className="error-message-text">{text}</div>
         </div>
     )
 }

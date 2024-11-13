@@ -1,16 +1,19 @@
 .success-message-container {
     display: flex;
+    flex-flow: row wrap;
     justify-content: center;
+    align-items: center;
+
+    padding: 1rem;
 
     & .success-message-text {
         padding: 1rem;
         color: white;
         background-color: rgba(0, 255, 34, 0.233);
+    }
 
-        &::before {
-            content: "✅";
-            vertical-align: inherit;
-            padding-right: 0.2rem;
-        }
+    & .success-message-icon {
+        font-size: 2rem;
+        color: white;
     }
 }

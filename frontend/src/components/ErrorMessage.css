@@ -1,18 +1,20 @@
 .error-message-container {
     display: flex;
+    flex-flow: row wrap;
     justify-content: center;
+    align-items: center;
+
+    padding: 1rem;
+
+    background-color: rgba(255, 0, 0, 0.233);
 
     & .error-message-text {
-        white-space: pre;
-
         padding: 1rem;
         color: white;
-        background-color: rgba(255, 0, 0, 0.233);
+    }
 
-        &::before {
-            content: "❌";
-            vertical-align: inherit;
-            padding-right: 0.2rem;
-        }
+    & .error-message-icon {
+        font-size: 2rem;
+        color: white;
     }
 }
