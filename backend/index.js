@@ -3,7 +3,7 @@ import express from "express";
 const app = express();
 
 //express is running behind nginx - setting needed for rate limiting
-//app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 
 //global middleware
 app.use(express.json());
