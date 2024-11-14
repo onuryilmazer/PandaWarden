@@ -19,4 +19,6 @@ router.get("/details",
     }
 })
 
+router.get('/ip', (request, response) => response.send(request.ip));
+
 export default router;
