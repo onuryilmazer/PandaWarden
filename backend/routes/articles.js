@@ -2,10 +2,12 @@ import express from "express";
 import { body, param, validationResult } from "express-validator";
 import articlesService from "../services/articlesService.js";
 import { checkExistingValidators } from "../middleware/customValidators.js";
+import { articleLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
 router.get("/latest/:offset/:limit", 
+    articleLimiter,
     param("offset").trim().notEmpty().isInt({min: 0}).withMessage("Invalid offset"),
     param("limit").trim().notEmpty().isInt({min: 1, max: 100}).withMessage("Invalid limit"),
     checkExistingValidators,
@@ -26,6 +28,7 @@ router.get("/latest/:offset/:limit",
 )
 
 router.get("/:id",
+    articleLimiter,
     param("id").trim().notEmpty().isInt({min: 1}).withMessage("Invalid ID"),
     checkExistingValidators,
     async (req, res, next) => {

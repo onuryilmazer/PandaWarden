@@ -2,10 +2,12 @@ import express from "express";
 import { body, validationResult } from "express-validator";
 import userService from "../services/userService.js";
 import { checkExistingValidators } from "../middleware/customValidators.js";
+import { loginLimiter, registrationLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
 router.post("/login", 
+    loginLimiter,
     body("username").trim().notEmpty().withMessage("Username can't be empty."),
     body("password").trim().notEmpty().withMessage("Password can't be empty."),
     checkExistingValidators,
@@ -25,6 +27,7 @@ router.post("/login",
 });
 
 router.post("/register", 
+    registrationLimiter,
     body("username", "Invalid username")
         .trim()
         .notEmpty().withMessage("Username can't be empty")

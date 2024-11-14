@@ -1,4 +1,4 @@
-import { ConnectionError, HttpError, LoginExpiredError, ResourceNotFoundError } from "./ErrorClasses";
+import { ConnectionError, HttpError, LoginExpiredError, RateLimitingError, ResourceNotFoundError } from "./ErrorClasses";
 
 const BASE_URL = "/articles";
 
@@ -15,6 +15,7 @@ async function getArticles({offset = 0, limit = 30, token}) {
     if (!header.ok) {
         if (header.status === 401) throw new LoginExpiredError();
         else if (header.status === 404) throw new ResourceNotFoundError();
+        else if (header.status === 429) throw new RateLimitingError();
         else throw new HttpError(body ?? `Could not fetch articles. \n (${header.statusText})`, header.status);
     }
     
@@ -34,6 +35,7 @@ async function getArticle({id, token}) {
     if (!header.ok) {
         if (header.status === 401) throw new LoginExpiredError();
         else if (header.status === 404) throw new ResourceNotFoundError();
+        else if (header.status === 429) throw new RateLimitingError();
         else throw new HttpError(body ?? `Could not fetch article. \n (${header.statusText})`, header.status);
     }
 
@@ -52,6 +54,7 @@ async function getNextScrapeTime({token}) {
 
     if (!header.ok) {
         if (header.status === 401) throw new LoginExpiredError();
+        else if (header.status === 429) throw new RateLimitingError();
         else throw new HttpError(body ?? `Could not fetch time to next scraping. \n (${header.statusText})`, header.status);
     }
 

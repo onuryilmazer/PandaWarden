@@ -1,11 +1,14 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import userService from "../services/userService.js";
+import { userDetailsLimiter } from "../middleware/rateLimiter.js";
 
 
 const router = express.Router();
 
-router.get("/details", async (req, res, next) => {
+router.get("/details", 
+    userDetailsLimiter,    
+    async (req, res, next) => {
 
     try {
         const userDetails = await userService.getUserDetails(req.token.username);

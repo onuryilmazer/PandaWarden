@@ -3,10 +3,12 @@ import { body, param, validationResult } from "express-validator";
 import scrapingService from "../services/scrapingService.js";
 import taskScheduler from "../services/taskScheduler.js";
 import { checkExistingValidators } from "../middleware/customValidators.js";
+import { scrapingLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
 router.post("/source/:sourceId", 
+    scrapingLimiter,
     param("sourceId").trim().notEmpty().isInt().withMessage("Invalid source ID."),
     checkExistingValidators,
     async (req, res, next) => {
@@ -20,6 +22,7 @@ router.post("/source/:sourceId",
 });
 
 router.post("/source/:sourceId/missingArticleDetails",
+    scrapingLimiter,
     param("sourceId").trim().notEmpty().isInt().withMessage("Invalid source ID."),    
     checkExistingValidators,
     async (req, res, next) => {
@@ -34,6 +37,7 @@ router.post("/source/:sourceId/missingArticleDetails",
 });
 
 router.post("/article/:id", 
+    scrapingLimiter,
     param("id").trim().notEmpty().isInt().withMessage("Invalid article ID."),    
     checkExistingValidators,
     async (req, res, next) => {

@@ -20,6 +20,8 @@ function Dashboard() {
 
 function ScrapeTimer() {
     const auth = useAuth();
+    
+    const [triggerRequest, setTriggerRequest] = useState(1);
 
     const [remainingSeconds, setRemainingSeconds] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -31,14 +33,23 @@ function ScrapeTimer() {
         getNextScrapeTime({token: auth.token})
             .then(result => { if(!discard) {                
                 intervalId = setInterval(() => {
-                    setRemainingSeconds(Math.floor((new Date(result) - new Date()) / 1000));
+                    const newSeconds = Math.floor((new Date(result) - new Date()) / 1000);
+                    if (newSeconds <= 0) {
+                        clearInterval(intervalId);
+                        setRemainingSeconds(0);
+
+                        setTimeout( () => setTriggerRequest(s => s+1), 5000 );
+                        return;
+                    }
+
+                    setRemainingSeconds(newSeconds);
                 }, 1000);
 
             } })
             .catch(e => { setErrorMessage(e.message); });
 
         return () => {discard = true; clearInterval(intervalId);};
-    }, [auth.token]);
+    }, [auth.token, triggerRequest]);
 
     return(
         <div className="block-container">

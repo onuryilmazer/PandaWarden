@@ -1,4 +1,4 @@
-import { ConnectionError, HttpError, LoginExpiredError } from "./ErrorClasses";
+import { ConnectionError, HttpError, LoginExpiredError, RateLimitingError } from "./ErrorClasses";
 
 const BASE_URL = "/user";
 
@@ -13,6 +13,7 @@ async function getDetails(token) {
     const body = await header.json().catch(() => null);
     
     if (header.status == 401) throw new LoginExpiredError();
+    else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body ?? `Could not retrieve user details. \n ${header.statusText}`, header.status);
 
     return body;
