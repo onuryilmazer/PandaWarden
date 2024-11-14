@@ -1,5 +1,6 @@
 import "./utils/config.js";
 import express from "express";
+import morgan from "morgan";
 const app = express();
 
 //express is running behind nginx - setting needed for rate limiting
@@ -7,6 +8,7 @@ app.set("trust proxy", 1);
 
 //global middleware
 app.use(express.json());
+app.use(morgan('combined'));
 
 //import middleware
 import {checkAuthToken, checkAdminRights } from "./middleware/authMiddleware.js";
