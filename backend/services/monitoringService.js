@@ -73,6 +73,8 @@ class MonitoringService {
             );
         }
 
+        await this.executeAllStaleMonitoringRequests();
+
         return requestId;
     }
 
