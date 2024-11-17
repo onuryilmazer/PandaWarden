@@ -22,6 +22,7 @@ import Account from './pages/user/Account.jsx';
 import Article from './pages/user/Article.jsx';
 import CreateScan from './pages/user/CreateScan.jsx';
 import ProtectedPage from './components/ProtectedPage.jsx';
+import Scan from './pages/user/Scan.jsx';
 
 const router = createHashRouter(
   createRoutesFromElements(
@@ -34,6 +35,7 @@ const router = createHashRouter(
         <Route path="/account" element={<ProtectedPage><Account /></ProtectedPage>} />
         <Route path="/dashboard/article/:id" element={<ProtectedPage><Article /></ProtectedPage>} />
         <Route path="/createScan" element={<ProtectedPage><CreateScan /></ProtectedPage>} />
+        <Route path="/scan/:id" element={<ProtectedPage><Scan /></ProtectedPage>} />
         <Route path='*' element={<NotFound404/>} />
       </Route>
     </Route>

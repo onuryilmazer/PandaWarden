@@ -25,13 +25,14 @@ function Error() {
     useEffect(() => {
         let cancel = false;
         const redirectTo = error.redirectTo ?? -1;
+        if (error.action) error.action();
 
         setTimeout(() => {
             if (cancel) return;
             
             if (remainingSeconds > 1) setRemainingSeconds(s => s - 1);
             else {
-                if (error.action) error.action();
+                //if (error.action) error.action();
                 navigate(redirectTo);
             }
 

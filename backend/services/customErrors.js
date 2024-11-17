@@ -1,6 +1,6 @@
 class DatabaseError extends Error {
-  constructor() {
-    super("Database connection failed.");
+  constructor(message) {
+    super(message ?? "Database connection failed.");
     this.name = 'DatabaseError';
   }
 }

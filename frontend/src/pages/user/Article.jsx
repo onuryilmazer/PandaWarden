@@ -45,7 +45,7 @@ function Article() {
 
                 <div>
                     <label>
-                        Article language: 
+                        Article language: <br /><br />
                         <select>
                             <option>asd</option>
                         </select> 

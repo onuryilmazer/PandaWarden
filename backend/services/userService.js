@@ -18,7 +18,7 @@ class UserService {
      */
     async createAuthToken({username, password}) {
         const userQuery = await db.query(
-            "SELECT username, email, password FROM users WHERE username = $1", 
+            "SELECT id, username, email, password FROM users WHERE username = $1", 
             [username]
         );
 
@@ -34,6 +34,7 @@ class UserService {
 
         //Create token  
         const claim = {
+            id: userQuery.rows[0].id,
             username: userQuery.rows[0].username,
             email: userQuery.rows[0].email
         };
@@ -126,6 +127,138 @@ class UserService {
         if (userDetailsQuery.rows.length === 0) throw new Error("User does not exist");
 
         return userDetailsQuery.rows[0];
+    }
+
+    async getMonitoringRequestsOfUser(userId) {
+        const monitoringRequestsQuery = await db.query(
+            `SELECT * FROM monitoring_requests WHERE owner = $1 ORDER BY id ASC`,
+            [userId]
+        );
+
+        for (let request of monitoringRequestsQuery.rows) {
+            const keywordsQuery = await db.query(
+                `SELECT keyword FROM monitoring_requests_keywords
+                WHERE request_id = $1`,
+                [request.id]
+            );
+
+            request.keywords = keywordsQuery.rows.map(row => row.keyword);
+
+            const sourcesQuery = await db.query(
+                `SELECT source_id, source_name FROM monitoring_requests_sources
+                LEFT JOIN sources ON monitoring_requests_sources.source_id = sources.id
+                WHERE request_id = $1`,
+                [request.id]
+            );
+
+            request.sources = sourcesQuery.rows.map(row => row.source_name);
+
+            const countQuery = await db.query(
+                `SELECT COUNT(*) AS count FROM monitoring_requests_results
+                WHERE monitoring_request_id = $1`,
+                [request.id]
+            );
+
+            request.resultCount = countQuery.rows[0].count;
+        }
+
+        return monitoringRequestsQuery.rows;
+    }
+
+    async getMonitoringRequestOfUser(userId, requestId) {
+        const monitoringRequestQuery = await db.query(
+            `SELECT * FROM monitoring_requests WHERE owner = $1 AND id = $2`,
+            [userId, requestId]
+        );
+
+        if (monitoringRequestQuery.rows.length === 0) throw new Error("Request does not exist or does not belong to the user.");
+
+        const request = monitoringRequestQuery.rows[0];
+
+        const keywordsQuery = await db.query(
+            `SELECT keyword FROM monitoring_requests_keywords
+            WHERE request_id = $1`,
+            [request.id]
+        );
+
+        request.keywords = keywordsQuery.rows.map(row => row.keyword);
+
+        const sourcesQuery = await db.query(
+            `SELECT source_id, source_name FROM monitoring_requests_sources
+            LEFT JOIN sources ON monitoring_requests_sources.source_id = sources.id
+            WHERE request_id = $1`,
+            [request.id]
+        );
+
+        request.sources = sourcesQuery.rows.map(row => row.source_name);
+
+        const countQuery = await db.query(
+            `SELECT COUNT(*) AS count FROM monitoring_requests_results
+            WHERE monitoring_request_id = $1`,
+            [request.id]
+        );
+
+        request.resultCount = countQuery.rows[0].count;
+
+        const resultsQuery = await db.query(
+            `SELECT mrr.article_id, mrr.keywords,
+            a.id, a.catalog_title, a.catalog_description, a.catalog_screenshot_path, a.details_url, a.created_at, 
+            s.source_name 
+            FROM monitoring_requests_results AS mrr
+            LEFT JOIN articles AS a ON mrr.article_id = a.id
+            LEFT JOIN sources AS s ON a.source_id = s.id
+            WHERE mrr.monitoring_request_id = $1`,
+            [request.id]
+        );
+
+        request.results = resultsQuery.rows;
+
+        return request;
+    }
+
+    async deleteMonitoringRequest(userId, requestId) {
+        //check if request exists and belongs to the user
+        const requestQuery = await db.query(
+            "SELECT * FROM monitoring_requests WHERE id = $1",
+            [requestId]
+        );
+
+        if (requestQuery.rows.length === 0) throw new Error("Request does not exist.");
+        else if (requestQuery.rows[0].owner !== userId) throw new Error("Request does not belong to the user.");
+        
+        //delete request
+        await db.query(
+            "DELETE FROM monitoring_requests WHERE id = $1",
+            [requestId]
+        );
+    }
+
+    /**
+     * 
+     * @param {*} userId 
+     * @param {*} requestId 
+     * @returns {boolean} The new active status of the request
+     */
+    async toggleMonitoringRequestActive(userId, requestId) {
+        //check if request exists and belongs to the user
+        const requestQuery = await db.query(
+            "SELECT * FROM monitoring_requests WHERE id = $1",
+            [requestId]
+        );
+
+        if (requestQuery.rows.length === 0) throw new Error("Request does not exist.");
+        else if (requestQuery.rows[0].owner !== userId) throw new Error("Request does not belong to the user.");
+
+        //toggle active status
+        let result = await db.query(
+            `UPDATE monitoring_requests
+            SET active = NOT active
+            WHERE id = $1
+            RETURNING active`,
+            [requestId]
+        );
+
+        return result.rows[0].active;
     }
 }
 

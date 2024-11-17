@@ -3,13 +3,13 @@
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
-
     padding: 1rem;
+    
+    background-color: rgba(0, 255, 34, 0.233);
 
     & .success-message-text {
         padding: 1rem;
         color: white;
-        background-color: rgba(0, 255, 34, 0.233);
 
         white-space: pre-line;
     }

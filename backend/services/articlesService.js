@@ -46,6 +46,23 @@ class ArticlesService {
 
         return articleQuery.rows[0];
     }
+
+    /**
+     * Note: untested.
+     * @param {Array<number>} articles 
+     */
+    async getArticles(articles) {
+        if (!Array.isArray(articles)) throw new Error("Invalid input.");
+
+        const articleQuery = await db.query(
+            "SELECT articles.id, catalog_title, catalog_description, catalog_screenshot_path, details_url, articles.created_at, source_name " +
+            "FROM articles LEFT JOIN sources ON articles.source_id = sources.id " + 
+            "WHERE articles.id = ANY($1::int[])", 
+            [articles]
+        );
+
+        return articleQuery.rows;
+    }
 }
 
 const articlesService = new ArticlesService();

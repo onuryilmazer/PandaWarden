@@ -1,3 +1,4 @@
+import "../utils/config.js";
 import pg from 'pg';
 import { DatabaseError } from './customErrors.js';
 const { Pool } = pg;
@@ -9,7 +10,7 @@ const query = async (text, params, callback) => {
     return await pool.query(text, params, callback);
   }
   catch (e) {
-    throw new DatabaseError("Database connection failed");
+    throw new DatabaseError("Database connection failed " + e.message + e.code);
   }
 };
 
