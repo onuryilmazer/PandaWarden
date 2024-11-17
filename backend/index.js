@@ -20,6 +20,7 @@ import scrapeRouter from "./routes/scrape.js";
 import articlesRouter from "./routes/articles.js";
 import adminRouter from "./routes/admin.js";
 import { DatabaseError } from "./services/customErrors.js";
+import { honeypotLimiter } from "./middleware/rateLimiter.js";
 
 app.use("/admin", checkAdminRights, adminRouter);
 
@@ -31,6 +32,12 @@ app.use("/articles", checkAuthToken, articlesRouter);
 //serve static files
 app.use("/scraper_data", express.static("scraper_data"));
 app.use("/", express.static("public"));
+
+app.use("/php*", honeypotLimiter);
+app.use("/admin*", honeypotLimiter);
+app.use("/wp*", honeypotLimiter);
+app.use("/vendor*", honeypotLimiter);
+
 
 //error handler
 app.use((err, req, res, next) => {

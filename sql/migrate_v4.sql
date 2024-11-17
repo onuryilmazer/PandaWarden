@@ -9,7 +9,7 @@ ALTER TABLE monitoring_requests_sources DROP CONSTRAINT monitoring_requests_sour
 ALTER TABLE monitoring_requests_sources ADD FOREIGN KEY (request_id) REFERENCES monitoring_requests (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE monitoring_requests_sources ADD FOREIGN KEY (source_id) REFERENCES sources (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE monitoring_requests_results DROP CONSTRAINT monitoring_request_results_article_id_fkey;
-ALTER TABLE monitoring_requests_results DROP CONSTRAINT monitoring_request_results_monitoring_request_id_fkey;
+ALTER TABLE monitoring_requests_results DROP CONSTRAINT monitoring_requests_results_article_id_fkey;
+ALTER TABLE monitoring_requests_results DROP CONSTRAINT monitoring_requests_results_monitoring_request_id_fkey;
 ALTER TABLE monitoring_requests_results ADD FOREIGN KEY (monitoring_request_id) REFERENCES monitoring_requests (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE monitoring_requests_results ADD FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE ON UPDATE CASCADE;
