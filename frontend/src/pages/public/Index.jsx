@@ -3,6 +3,10 @@ import './Index.css'
 import logo from "../../assets/logo.svg";
 import { useAuth } from '../../context/AuthContext';
 
+import monitoringRequestImage from "../../assets/monitor.png";
+import summarizationImage from "../../assets/aisummary.png";
+import browseImage from "../../assets/browse.png";
+
 function Index() {
   const auth = useAuth();
   const loggedIn = !!auth.token;
@@ -15,17 +19,44 @@ function Index() {
           <img className="logo" src={logo} />
         </div>
         <div className="intro">
-          <p>Enlist the help of our army of watchful pandas to monitor the internet, tracking news stories as they emerge in real-time.</p>
-          <p>Stay on top of the news with real-time alerts and email notifications for your tracked topics.</p>
+          <p>Panda Warden helps you track news from around the world by monitoring online news agencies.</p>
+          <p>Upon registration, you will be able to access our collection of news articles that are curated from various sources. After creating your first monitoring request, Panda Warden will regularly send you a list of the newly published articles relevant to your interests, along with their AI-generated summaries.</p>
           <p>Create an account or log in to start using Panda Warden.</p>
+          <div className='action-link'>
+            {
+              loggedIn 
+              ? <Link to={"/dashboard"}>Go to the dashboard</Link>
+              : <Link to={"/login"}>Log in now</Link>
+            }
+          </div>
         </div>
       </div>
       
-      {
-        loggedIn 
-        ? <Link to={"/dashboard"}>Go to your dashboard</Link>
-        : <Link to={"/login"}>Log in now</Link>
-      }
+
+      <Features />
+    </div>
+  )
+}
+
+function Features() {
+  return (
+    <div className=" features">
+      <div className="block-header"> <h1>Features</h1> </div>
+      <div className="feature">
+        <h2>Monitoring requests</h2>
+        <img src={monitoringRequestImage} alt="monitoring request" />
+        <p>Create monitoring requests and receive alerts.</p>
+      </div>
+      <div className="feature">
+        <h2>Summarization</h2>
+        <img src={summarizationImage} alt="summarization" />
+        <p>Get AI-generated summaries of the articles you monitor.</p>
+      </div>
+      <div className="feature">
+        <h2>Browse articles</h2>
+        <img src={browseImage} alt="browse articles" />
+        <p>Browse through collected news articles.</p>
+      </div>
     </div>
   )
 }

@@ -29,7 +29,8 @@ class AiService {
         const articlesWithNoSummaryQuery = await db.query(
             `SELECT id, catalog_title, catalog_description, details_title, details_description
             FROM articles
-            WHERE details_aisummary IS NULL OR details_aisummary = ''`
+            WHERE details_aisummary IS NULL OR details_aisummary = ''
+            ORDER BY id DESC`
         );
 
         for(const article of articlesWithNoSummaryQuery.rows) {

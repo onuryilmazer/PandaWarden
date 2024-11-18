@@ -33,12 +33,11 @@ function Scan() {
 
             <div className="block-container">
                 <div>
-                    <p>Active: {scanResults?.active}</p>
+                    <p>Active: {scanResults?.active ? "Yes" : "No"}</p>
                     <p>Execution count: {scanResults?.execution_count}</p>
-                    <p>Last execution: {scanResults?.last_execution}</p>
+                    <p>Last execution: {scanResults?.last_execution && new Date(scanResults?.last_execution).toLocaleString()}</p>
                     <span>Repeats every: {scanResults?.repeat_interval?.hours ? scanResults?.repeat_interval?.hours + " hours" : ""} {scanResults?.repeat_interval?.minutes ? scanResults?.repeat_interval?.minutes + " minutes" : ""} {scanResults?.repeat_interval?.seconds ? scanResults?.repeat_interval?.seconds + " seconds" : ""} </span>
                     <p>Keywords: {scanResults?.keywords?.join(", ")}</p>
-                    <p>Last execution: {scanResults?.last_execution}</p>
                     <p>Sources: {scanResults?.sources?.join(", ")}</p>
                     <p>Number of results: {scanResults?.resultCount}</p>
                 </div>
