@@ -75,17 +75,17 @@ function CreateScan() {
                         <div className="sources-checkbox-container">
                             <input type="checkbox" checked></input> All
                         </div>
-                            {sources.map((source) => {
+                            {/* {sources.map((source) => {
                                 return (
                                     <div className="sources-checkbox-container" key={source.id}>
                                         <input type="checkbox" name={source.id} value={"on"} disabled></input> {source.name}
                                     </div>
                                 )
-                            })}
+                            })} */}
                     </div>
                 </div>
 
-                <div className="block-row"><input type="checkbox" disabled></input> <p>Use local languages when searching non-english websites (coming soon)</p></div>
+                {/* <div className="block-row"><input type="checkbox" disabled></input> <p>Use local languages when searching non-english websites (coming soon)</p></div> */}
                 
                 <div className="block-row"><button type="submit">Create scan</button></div>
             </div>
