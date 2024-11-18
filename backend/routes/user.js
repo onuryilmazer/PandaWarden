@@ -32,9 +32,9 @@ router.get("/monitoringRequests", async (req, res, next) => {
 });
 
 router.post("/monitoringRequests", 
-    body("repeatIntervalSeconds").trim().notEmpty().isInt().toInt(),
-    body("keywords").isArray().notEmpty().custom((value) => value.every((keyword) => typeof keyword === "string")),
-    body("sourceIds").isArray().notEmpty().custom((value) => value.every((sourceId) => typeof sourceId === "number")),
+    body("repeatIntervalSeconds").trim().notEmpty().isInt().toInt().withMessage("Invalid notification frequency."),
+    body("keywords").isArray().notEmpty().custom((value) => value.every((keyword) => typeof keyword === "string")).withMessage("Invalid keywords."),
+    body("sourceIds").isArray().notEmpty().custom((value) => value.every((sourceId) => typeof sourceId === "number")).withMessage("Invalid sources."),
     checkExistingValidators,
     async (req, res, next) => {
         try {
@@ -48,7 +48,7 @@ router.post("/monitoringRequests",
 );
 
 router.get("/monitoringRequests/:id", 
-    param("id").trim().notEmpty().isInt().toInt(),
+    param("id").trim().notEmpty().isInt().toInt().withMessage("Invalid monitoring request ID."),
     checkExistingValidators,    
     async (req, res, next) => {
     try {
@@ -61,7 +61,7 @@ router.get("/monitoringRequests/:id",
 });
 
 router.patch("/monitoringRequests/:id/toggleActiveness",
-    param("id").trim().notEmpty().isInt().toInt(),
+    param("id").trim().notEmpty().isInt().toInt().withMessage("Invalid monitoring request ID."),
     checkExistingValidators,    
     async (req, res, next) => {
     try {
@@ -74,7 +74,7 @@ router.patch("/monitoringRequests/:id/toggleActiveness",
 });
 
 router.delete("/monitoringRequests/:id", 
-    param("id").trim().notEmpty().isInt().toInt(),
+    param("id").trim().notEmpty().isInt().toInt().withMessage("Invalid monitoring request ID."),
     checkExistingValidators,    
     async (req, res, next) => {
     try {
