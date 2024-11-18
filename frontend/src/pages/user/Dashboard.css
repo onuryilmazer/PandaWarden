@@ -54,6 +54,13 @@
     & .wrapper-link {
         text-decoration: none;
         user-select: none;
+
+        & .placeholder {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: center;
+            align-items: center;
+        }
     }
 
     & .article {

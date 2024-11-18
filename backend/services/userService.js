@@ -1,10 +1,13 @@
 import * as db from "./databaseService.js";
 import bcrypt, { hash } from "bcrypt";
 import { sign_promisified, verify_promisified } from "../utils/jwt-promisify.js";
+import { monitoringService } from "./monitoringService.js";
 
 class UserService {
     async registerUser({username, email, password}) {
-        return this._saveUserIntoDatabase({username, email, password});
+        const id = await this._saveUserIntoDatabase({username, email, password});
+        await this.createPlaceholderMonitoringRequests(id);
+        return id;
     }
 
     async listUsers() {
@@ -108,7 +111,7 @@ class UserService {
         const hashedPw = await this._hashPassword(password);
 
         const registrationQuery = await db.query(
-            "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)", 
+            "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id", 
             [username, email, hashedPw]
         );
 
@@ -116,7 +119,11 @@ class UserService {
             throw new Error("User could not be persisted into database.");
         }
         
-        return true;
+        return registrationQuery.rows[0].id;
+    }
+
+    async createPlaceholderMonitoringRequests(userId) {
+        await monitoringService.createMonitoringRequest({owner: userId, repeatIntervalSeconds: 15*60, keywords: ["lithium", "battery"], sourceIds: [1]}, true);
     }
 
     async getUserDetails(username) {
@@ -207,7 +214,8 @@ class UserService {
             FROM monitoring_requests_results AS mrr
             LEFT JOIN articles AS a ON mrr.article_id = a.id
             LEFT JOIN sources AS s ON a.source_id = s.id
-            WHERE mrr.monitoring_request_id = $1`,
+            WHERE mrr.monitoring_request_id = $1
+            ORDER BY a.created_at DESC`,
             [request.id]
         );
 

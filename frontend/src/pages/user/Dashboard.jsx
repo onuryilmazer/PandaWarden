@@ -120,7 +120,7 @@ function MonitoringRequests() {
     )
 }
 
-function Scan({id, active, execution_count, last_execution, repeat_interval, keywords, sources, resultCount, editing, toggleRequest, deleteRequest}) {
+function Scan({id, active, execution_count, last_execution, repeat_interval, keywords, sources, resultCount, auto_generated, editing, toggleRequest, deleteRequest}) {
     return(
         <Link to={`/scan/${id}`} className="wrapper-link">
         <div className="scan-entry zebra-lines box-highlight-on-hover">
@@ -154,6 +154,7 @@ function Scan({id, active, execution_count, last_execution, repeat_interval, key
                     <button onClick={(e) => deleteRequest(e, id)} >🗑️</button> 
                 </div> 
             }
+            {auto_generated && <div className="placeholder">This is an automatically generated placeholder. Feel free to delete it after you are done exploring!</div>}
         </div>
         </Link>
     )

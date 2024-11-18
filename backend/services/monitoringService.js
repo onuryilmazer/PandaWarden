@@ -15,31 +15,35 @@ class MonitoringService {
         );
 
         for (let request of result.rows) {
-
-            //fetch keywords of request
-            const keywordsQuery = await this.db.query(
-                `SELECT keyword FROM monitoring_requests_keywords
-                WHERE request_id = $1`,
-                [request.id]
-            );
-
-            request.keywords = keywordsQuery.rows.map(row => row.keyword);
-
-
-            //fetch sources of request
-            const sourcesQuery = await this.db.query(
-                `SELECT source_id FROM monitoring_requests_sources
-                WHERE request_id = $1`,
-                [request.id]
-            );
-
-            request.sources = sourcesQuery.rows.map(row => row.source_id);
+            await this.populateRequestWithKeywordsAndSources(request);
         }
 
         return result.rows;
     }
 
-    async createMonitoringRequest({owner, repeatIntervalSeconds, keywords, sourceIds}) {
+    async populateRequestWithKeywordsAndSources(request) {
+        //fetch keywords of request
+        const keywordsQuery = await this.db.query(
+            `SELECT keyword FROM monitoring_requests_keywords
+            WHERE request_id = $1`,
+            [request.id]
+        );
+
+        request.keywords = keywordsQuery.rows.map(row => row.keyword);
+
+        //fetch sources of request
+        const sourcesQuery = await this.db.query(
+            `SELECT source_id FROM monitoring_requests_sources
+            WHERE request_id = $1`,
+            [request.id]
+        );
+
+        request.sources = sourcesQuery.rows.map(row => row.source_id);
+
+        return request;
+    }
+
+    async createMonitoringRequest({owner, repeatIntervalSeconds, keywords, sourceIds}, placeholder = false) {
         console.log(`Creating monitoring request for owner ${owner} with repeat interval ${repeatIntervalSeconds} seconds, keywords ${keywords} and sources ${sourceIds}`);
         //throws an error if the repeatIntervalSeconds is not one of the allowed values
         if (![15 * 60, 60 * 60, 60 * 60 * 12, 60 * 60 * 24].includes(repeatIntervalSeconds)) {
@@ -49,19 +53,19 @@ class MonitoringService {
         //todo convert this into a transaction, revert if any of the inserts fail
 
         const result = await this.db.query(
-            `INSERT INTO monitoring_requests (owner, active, execution_count, repeat_interval)
-            VALUES ($1, true, 0, make_interval(secs => $2))
+            `INSERT INTO monitoring_requests (owner, active, execution_count, repeat_interval, auto_generated)
+            VALUES ($1, $2, 0, make_interval(secs => $3), $4)
             RETURNING id`,
-            [owner, repeatIntervalSeconds]
+            [owner, !placeholder, repeatIntervalSeconds, placeholder]
         );
 
-        const requestId = result.rows[0].id;
+        const request = result.rows[0];
 
         for (let keyword of keywords) {
             await this.db.query(
                 `INSERT INTO monitoring_requests_keywords (request_id, keyword)
                 VALUES ($1, $2)`,
-                [requestId, keyword]
+                [request.id, keyword]
             );
         }
 
@@ -69,13 +73,15 @@ class MonitoringService {
             await this.db.query(
                 `INSERT INTO monitoring_requests_sources (request_id, source_id)
                 VALUES ($1, $2)`,
-                [requestId, sourceId]
+                [request.id, sourceId]
             );
         }
 
-        await this.executeAllStaleMonitoringRequests();
+        await this.populateRequestWithKeywordsAndSources(request);
 
-        return requestId;
+        await this.executeMonitoringRequest(request);
+
+        return request.id;
     }
 
     async executeMonitoringRequest(request) {

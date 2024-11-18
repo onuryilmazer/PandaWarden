@@ -1,0 +1,1 @@
+ALTER TABLE monitoring_requests ADD COLUMN auto_generated BOOLEAN DEFAULT FALSE;
