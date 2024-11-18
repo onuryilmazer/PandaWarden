@@ -29,9 +29,9 @@ function Scan() {
     return (
         <div className="page-container">
             <div className="page-title"> <h1>Scan {scanResults?.id}</h1> </div>
+            <Link to={-1}>Return to dashboard</Link>
 
             <div className="block-container">
-                <Link to={-1}>Go back to my dashboard</Link>
                 <div>
                     <p>Active: {scanResults?.active}</p>
                     <p>Execution count: {scanResults?.execution_count}</p>
