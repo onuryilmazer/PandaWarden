@@ -1,6 +1,7 @@
 import { scheduleJob } from "node-schedule";
 import scrapingService from "./scrapingService.js";
 import { monitoringService } from "./monitoringService.js";
+import { aiService } from "./aiService.js";
 
 class TaskScheduler {
     constructor() {
@@ -13,6 +14,7 @@ class TaskScheduler {
                 try {
                     await scrapingService.scrapeHomepage(sourceId);
                     await scrapingService.scrapeAllMissingArticleDetails(sourceId);
+                    if (process.env.NODE_ENV == "production") await aiService.generateAndSaveArticleSummariesForAllArticles();
                 } catch (e) {
                     console.error(`Error while scraping ${sourceId}: ${e.message}`);
                 }

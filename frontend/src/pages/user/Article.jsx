@@ -1,3 +1,7 @@
+import "./Article.css";
+
+import openAiLogo from "../../assets/openai.png";
+
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getArticle } from "../../services/ArticleService";
@@ -23,9 +27,12 @@ function Article() {
     return (
         <div className="page-container">
             <div className="page-title"> <h1>{article?.details_title}</h1> </div>
+            <Link to={-1}>Return to dashboard</Link>
 
             <div className="block-container">
-                <Link to={-1}>Go back to my dashboard</Link>
+                <div className="block-header">
+                    <h2>Metadata</h2>
+                </div>
                 <div>
                     <p>Source: {article?.source_name}</p>
                     <p>Collected at: {article?.created_at && new Date(article?.created_at).toLocaleString()}</p>
@@ -34,26 +41,47 @@ function Article() {
             </div>
 
             <div className="block-container">
-                <div>AI summary of the article: {article?.details_aisummary ?? "Not available."} </div>
+                <div className="block-header">
+                    <h2>AI summary of the article</h2>
+                </div>
+                <div>
+                    <label>
+                        Summary language: <br /><br />
+                        <select disabled>
+                            <option>English</option>
+                        </select> 
+                    </label>
+                </div>
+
+                <div className="article-summary">
+                    <div className="summary-logo">
+                        <img src={openAiLogo} />
+                    </div>
+                    <div className="summary-text">
+                        {article?.details_aisummary ?? "Not available."} 
+                    </div>
+                </div>
             </div>
 
-            <div className="block-container">
+            {/* <div className="block-container">
                 <div className="block-header">
-                        <div>Problem with article? Click the button to fetch it again.</div>
-                        <button>🔁</button>
+                    <h2>Controls</h2>
                 </div>
 
                 <div>
                     <label>
-                        Article language: <br /><br />
-                        <select>
-                            <option>asd</option>
-                        </select> 
+                        Troubleshooting <br /><br />
+                        <button>🔁 Fetch Article Again</button>
                     </label>
                 </div>
-            </div>
+                
+                
+            </div> */}
 
             <div className="block-container">
+                <div className="block-header">
+                    <h2>Article screenshot</h2>
+                </div>
                 <div className="thumbnail">
                     <img style={{maxWidth: "100%"}} src={"/" + article?.details_screenshot_path}></img>
                 </div>

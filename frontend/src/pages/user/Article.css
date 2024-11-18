@@ -1,0 +1,37 @@
+.article-summary {
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    @media screen and (max-width: 40rem) {
+        flex-flow: column nowrap;
+        
+    }
+
+    gap: 1rem;
+    padding: 1rem;
+
+    align-items: center;
+
+
+    background-color: rgba(0, 0, 0, 0.726);
+    box-sizing: border-box;
+    border-radius: 1rem;
+
+    & .summary-logo {
+        width: 5rem;
+        height: 5rem;
+        flex-shrink: 0;
+
+        & img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    }
+
+    & .summary-text {
+        font-size: large;
+    }
+
+
+}
