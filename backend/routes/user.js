@@ -32,9 +32,9 @@ router.get("/monitoringRequests", async (req, res, next) => {
 });
 
 router.post("/monitoringRequests", 
-    body("repeatIntervalSeconds").trim().notEmpty().isInt().toInt().withMessage("Invalid notification frequency."),
-    body("keywords").isArray().notEmpty().custom((value) => value.every((keyword) => typeof keyword === "string")).withMessage("Invalid keywords."),
-    body("sourceIds").isArray().notEmpty().custom((value) => value.every((sourceId) => typeof sourceId === "number")).withMessage("Invalid sources."),
+    body("repeatIntervalSeconds", "Invalid notification frequency.").trim().notEmpty().isInt().toInt(),
+    body("keywords", "Invalid keywords.").isArray().notEmpty().custom((value) => value.every((keyword) => typeof keyword === "string")),
+    body("sourceIds", "Invalid sources.").isArray().notEmpty().custom((value) => value.every((sourceId) => typeof sourceId === "number")),
     checkExistingValidators,
     async (req, res, next) => {
         try {
