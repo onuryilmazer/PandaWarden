@@ -38,6 +38,8 @@ class DWScraper extends Scraper {
         articles.push(...await this._scrapeNewsSection(page));
         articles.push(...await this._scrapeTeasersSections(page));
 
+        articles.forEach(article => article.identifierWithinSource = this.determineSourceIdentifier(article));
+
         //cleanup (no await needed)
         page.close();
 
@@ -255,6 +257,16 @@ class DWScraper extends Scraper {
         }
         
         return articles;
+    }
+
+    /**
+     * Returns a string identifier that uniquely identifies the article within the same source, so that you can track different versions of the same article.
+     * E.g. when article title is edited to fix a typo, you can check this identifier to make sure you don't treat it as a new article.
+     * @param {*} article 
+     * @returns {string} The identifier, such as "a-234523" or null if not found.
+     */
+    determineSourceIdentifier(article) {
+        return article?.url.match(/[^/]+$/)?.[0] ?? null;
     }
 }
 

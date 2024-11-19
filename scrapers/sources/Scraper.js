@@ -66,6 +66,14 @@ class Scraper {
     _generateImagePath(title, extension) {
         return this.folderName + "/" + title.replace(/[^a-z0-9]/gi, '_') + "-" + Date.now() + extension;
     }
+
+    /**
+     * This needs to be implemented by the child class.
+     * @param {*} article 
+     */
+    determineSourceIdentifier(article) {   
+        throw new Error("determineSourceIdentifier not implemented by the extending class named " + this.constructor.name);
+    }
 }
 
 
