@@ -27,7 +27,7 @@ app.use("/admin", checkAdminRights, adminRouter);
 app.use("/auth", authRouter);
 app.use("/user", checkAuthToken, userRouter);
 app.use("/scrape", checkAuthToken, scrapeRouter);
-app.use("/articles", checkAuthToken, articlesRouter);
+app.use("/articles", articlesRouter);
 
 //serve static files
 app.use("/scraper_data", express.static("scraper_data"));
@@ -45,10 +45,10 @@ app.use((err, req, res, next) => {
     else if (err instanceof DatabaseError) res.status(500);
 
     if (err instanceof AggregateError) {
-        return res.json(err.errors.map(e => e.message).join("\n"));
+        err.message = err.errors.map(e => e.message).join("\n");
     }
 
-    res.json(err.message);
+    res.json(err);
 });
 
 

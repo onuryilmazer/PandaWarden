@@ -1,3 +1,6 @@
+import jwt_pkg from "jsonwebtoken";
+const { TokenExpiredError } = jwt_pkg;
+
 import userService from "../services/userService.js";
 
 async function checkAuthToken(req, res, next) {
@@ -21,6 +24,10 @@ async function checkAuthToken(req, res, next) {
     }
     catch (e) {
         res.status(401);
+        if (e instanceof TokenExpiredError) {
+            e.message = "TokenExpiredError";
+        }
+
         return next(e);
     }
 }

@@ -2,11 +2,11 @@ import "./CreateScan.css";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { createMonitoringRequest } from "../../services/UserService";
-import { useAuth } from "../../context/AuthContext";
-import ErrorMessage from "../../components/ErrorMessage";
-import { LoginExpiredError } from "../../services/ErrorClasses";
-import SuccessMessage from "../../components/SuccessMessage";
+import { createMonitoringRequest } from "../../../services/UserService";
+import { useAuth } from "../../../context/AuthContext";
+import ErrorMessage from "../../../components/ErrorMessage";
+import { LoginExpiredError } from "../../../services/ErrorClasses";
+import SuccessMessage from "../../../components/SuccessMessage";
 
 function CreateScan() {
     const auth = useAuth();
@@ -29,7 +29,7 @@ function CreateScan() {
                 sourceIds: sources.map(source => source.id)
                 /* notificationType: elements.notificationType.value, */ }
         )
-        .then((response) => {
+        .then(() => {
             setSuccess("Monitoring request created successfully.");
             setError("");
         })

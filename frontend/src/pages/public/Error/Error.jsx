@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useRouteError } from "react-router-dom";
 
 import "./Error.css";
-import ErrorMessage from "../../components/ErrorMessage";
-import { useAuth } from "../../context/AuthContext";
-import { AuthenticationError, ConnectionError, LoginExpiredError, LoginRequiredError } from "../../services/ErrorClasses";
+import ErrorMessage from "../../../components/ErrorMessage";
+import { useAuth } from "../../../context/AuthContext";
+import { AuthenticationError, ConnectionError, LoginExpiredError, LoginRequiredError } from "../../../services/ErrorClasses";
 
 function Error() {
     const auth = useAuth();

@@ -18,7 +18,7 @@ function Navbar() {
             <div className="left">
                 <NavLink to={"/"}><div className="logo-container"><img className="logo" src={logo}/></div></NavLink>
                 <NavLink to={"/"}>Home</NavLink>
-                {loggedIn && <NavLink to={"/dashboard"}>Dashboard</NavLink>}
+                <NavLink to={"/dashboard"}>Dashboard</NavLink>
             </div>
 
             <div className="right">

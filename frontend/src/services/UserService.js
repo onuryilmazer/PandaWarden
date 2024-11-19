@@ -14,7 +14,7 @@ async function getDetails(token) {
     
     if (header.status == 401) throw new LoginExpiredError();
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(body ?? `Could not retrieve user details. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Could not retrieve user details. \n ${header.statusText}`, header.status);
 
     return body;
 }
@@ -31,7 +31,7 @@ async function getMonitoringRequestsOfUser(token) {
     
     if (header.status == 401) throw new LoginExpiredError();
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(body ?? `Could not retrieve monitoring requests. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Could not retrieve monitoring requests. \n ${header.statusText}`, header.status);
 
     return body;
 }
@@ -48,7 +48,7 @@ async function getMonitoringRequestOfUser(token, requestId) {
     
     if (header.status == 401) throw new LoginExpiredError();
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(body ?? `Could not retrieve monitoring request. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Could not retrieve monitoring request. \n ${header.statusText}`, header.status);
 
     return body;
 }
@@ -65,7 +65,7 @@ async function toggleMonitoringRequestActive(token, requestId) {
     
     if (header.status == 401) throw new LoginExpiredError();
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(body ?? `Could not toggle monitoring request activeness. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Could not toggle monitoring request activeness. \n ${header.statusText}`, header.status);
 
     return body;
 }
@@ -82,7 +82,7 @@ async function deleteMonitoringRequest(token, requestId) {
 
     if (header.status == 401) throw new LoginExpiredError();
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(`Could not delete monitoring request. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Could not delete monitoring request. \n ${header.statusText}`, header.status);
 
     return body;
 }
@@ -103,7 +103,7 @@ async function createMonitoringRequest(token, {keywords, sourceIds, repeatInterv
 
     if (header.status == 401) throw new LoginExpiredError();
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(body ?? `Could not create monitoring request. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Could not create monitoring request. \n ${header.statusText}`, header.status);
 
     return body;
 }

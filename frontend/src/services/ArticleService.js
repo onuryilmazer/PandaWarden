@@ -1,4 +1,4 @@
-import { ConnectionError, HttpError, LoginExpiredError, RateLimitingError, ResourceNotFoundError } from "./ErrorClasses";
+import { ConnectionError, HttpError, RateLimitingError, ResourceNotFoundError } from "./ErrorClasses";
 
 const BASE_URL = "/articles";
 
@@ -13,10 +13,9 @@ async function getArticles({offset = 0, limit = 30, token}) {
     const body = await header.json().catch(() => null);
     
     if (!header.ok) {
-        if (header.status === 401) throw new LoginExpiredError();
-        else if (header.status === 404) throw new ResourceNotFoundError();
+        if (header.status === 404) throw new ResourceNotFoundError();
         else if (header.status === 429) throw new RateLimitingError();
-        else throw new HttpError(body ?? `Could not fetch articles. \n (${header.statusText})`, header.status);
+        else throw new HttpError(body?.message ?? `Could not fetch articles. \n (${header.statusText})`, header.status);
     }
     
     return body;
@@ -33,17 +32,16 @@ async function getArticle({id, token}) {
     const body = await header.json().catch(() => null);
 
     if (!header.ok) {
-        if (header.status === 401) throw new LoginExpiredError();
-        else if (header.status === 404) throw new ResourceNotFoundError();
+        if (header.status === 404) throw new ResourceNotFoundError();
         else if (header.status === 429) throw new RateLimitingError();
-        else throw new HttpError(body ?? `Could not fetch article. \n (${header.statusText})`, header.status);
+        else throw new HttpError(body?.message ?? `Could not fetch article. \n (${header.statusText})`, header.status);
     }
 
     return body;
 }
 
 async function getNextScrapeTime({token}) {
-    const header = await fetch(`/scrape/nextInvocation`, {
+    const header = await fetch(`${BASE_URL}/nextInvocation`, {
         method: "GET",
         headers: {"Authorization": `Bearer ${token}`}
     }).catch(() => new ConnectionError());
@@ -53,9 +51,8 @@ async function getNextScrapeTime({token}) {
     const body = await header.json().catch(() => null);
 
     if (!header.ok) {
-        if (header.status === 401) throw new LoginExpiredError();
-        else if (header.status === 429) throw new RateLimitingError();
-        else throw new HttpError(body ?? `Could not fetch time to next scraping. \n (${header.statusText})`, header.status);
+        if (header.status === 429) throw new RateLimitingError();
+        else throw new HttpError(body?.message ?? `Could not fetch time to next scraping. \n (${header.statusText})`, header.status);
     }
 
     return body;

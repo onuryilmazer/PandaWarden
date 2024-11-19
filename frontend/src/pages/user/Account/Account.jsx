@@ -1,8 +1,8 @@
 import "./Account.css";
 
 import { useEffect, useState } from "react";
-import { getDetails } from "../../services/UserService";
-import { useAuth } from "../../context/AuthContext";
+import { getDetails } from "../../../services/UserService";
+import { useAuth } from "../../../context/AuthContext";
 
 function Account() {
     const [details, setDetails] = useState(null);

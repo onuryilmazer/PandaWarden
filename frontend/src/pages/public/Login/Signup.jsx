@@ -4,12 +4,12 @@ import { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
 
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useAuth } from "../../../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 
-import { registerUser } from "../../services/RegistrationService.js";
-import ErrorMessage from "../../components/ErrorMessage.jsx";
-import SuccessMessage from "../../components/SuccessMessage.jsx";
+import { registerUser } from "../../../services/RegistrationService.js";
+import ErrorMessage from "../../../components/ErrorMessage.jsx";
+import SuccessMessage from "../../../components/SuccessMessage.jsx";
 
 function Signup() {
     const auth = useAuth();

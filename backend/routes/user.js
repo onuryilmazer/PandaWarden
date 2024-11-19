@@ -7,9 +7,9 @@ import { checkExistingValidators } from "../middleware/customValidators.js";
 
 
 const router = express.Router();
+router.use(userDetailsLimiter);
 
 router.get("/details", 
-    userDetailsLimiter,    
     async (req, res, next) => {
 
     try {

@@ -16,7 +16,7 @@ async function getToken({username, password}) {
     
     if (header.status == 401) throw new AuthenticationError(body);
     else if (header.status === 429) throw new RateLimitingError();
-    else if (!header.ok) throw new HttpError(body ?? `Login failed. \n ${header.statusText}`, header.status);
+    else if (!header.ok) throw new HttpError(body?.message ?? `Login failed. \n ${header.statusText}`, header.status);
 
     return body;
 }

@@ -15,7 +15,7 @@ async function registerUser({username, email, password}) {
 
     if (!header.ok) {
         if (header.status === 429) throw new RateLimitingError();
-        else throw new HttpError(body ?? `Signup failed. \n (${header.statusText})`, header.status);
+        else throw new HttpError(body?.message ?? `Signup failed. \n (${header.statusText})`, header.status);
     }
 
     return body;

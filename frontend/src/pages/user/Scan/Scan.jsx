@@ -1,8 +1,8 @@
 import { Link, useParams } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useEffect, useState } from "react";
-import { getMonitoringRequestOfUser } from "../../services/UserService";
-import { ArticleTeaser } from "./ArticleTeaser";
+import { getMonitoringRequestOfUser } from "../../../services/UserService";
+import { ArticleTeaser } from "../../../components/ArticleTeaser";
 
 function Scan() {
     const auth = useAuth();

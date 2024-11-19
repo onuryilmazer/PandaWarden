@@ -1,11 +1,11 @@
 import "./Article.css";
 
-import openAiLogo from "../../assets/openai.png";
+import openAiLogo from "../../../assets/openai.png";
 
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getArticle } from "../../services/ArticleService";
-import { useAuth } from "../../context/AuthContext";
+import { getArticle } from "../../../services/ArticleService";
+import { useAuth } from "../../../context/AuthContext";
 
 function Article() {
     const auth = useAuth();

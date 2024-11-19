@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
 import './Index.css'
-import logo from "../../assets/logo.svg";
-import { useAuth } from '../../context/AuthContext';
+import logo from "../../../assets/logo.svg";
+import { useAuth } from '../../../context/AuthContext';
 
-import monitoringRequestImage from "../../assets/monitor.png";
-import summarizationImage from "../../assets/aisummary.png";
-import browseImage from "../../assets/browse.png";
+import monitoringRequestImage from "../../../assets/monitor.png";
+import summarizationImage from "../../../assets/aisummary.png";
+import browseImage from "../../../assets/browse.png";
 
 function Index() {
   const auth = useAuth();
@@ -20,14 +20,11 @@ function Index() {
         </div>
         <div className="intro">
           <p>Panda Warden helps you track news from around the world by monitoring online news agencies.</p>
-          <p>Upon registration, you will be able to access our collection of news articles that are curated from various sources. After creating your first monitoring request, Panda Warden will regularly send you a list of the newly published articles relevant to your interests, along with their AI-generated summaries.</p>
-          <p>Create an account or log in to start using Panda Warden.</p>
+          <p>You can start browsing our collection of news articles as a guest.</p>
+          <p>After registration, you will be able to create monitoring requests, and Panda Warden will send you regular reports about the topics you are interested in.</p>
           <div className='action-link'>
-            {
-              loggedIn 
-              ? <Link to={"/dashboard"}>Go to the dashboard</Link>
-              : <Link to={"/login"}>Log in now</Link>
-            }
+              <Link to={"/dashboard"}>Start browsing {!loggedIn && "as a guest"}</Link><br />
+              {!loggedIn && <Link to={"/signup"}>Register now</Link>}
           </div>
         </div>
       </div>

@@ -3,11 +3,11 @@ import "./LoginSignup.css";
 import { useRef, useState } from "react";
 import { FaFish, FaUser, FaLock } from "react-icons/fa";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import Tooltip from "../../components/Tooltip";
-import ErrorMessage from "../../components/ErrorMessage";
-import { AlreadyLoggedInError } from "../../services/ErrorClasses";
+import Tooltip from "../../../components/Tooltip";
+import ErrorMessage from "../../../components/ErrorMessage";
+import { AlreadyLoggedInError } from "../../../services/ErrorClasses";
 
 const TOOLTIP_TEXT = {
     rememberMe: "If you check this box, your credentials will be persisted in your browser's \"Local Storage\", and you will stay logged in until you manually sign out.",

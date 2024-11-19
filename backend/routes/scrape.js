@@ -1,7 +1,6 @@
 import express from "express";
 import { body, param, validationResult } from "express-validator";
 import scrapingService from "../services/scrapingService.js";
-import taskScheduler from "../services/taskScheduler.js";
 import { checkExistingValidators } from "../middleware/customValidators.js";
 import { scrapingLimiter } from "../middleware/rateLimiter.js";
 
@@ -50,8 +49,5 @@ router.post("/article/:id",
         }  
 });
 
-router.get("/nextInvocation", async (req, res) => {
-    return res.json(taskScheduler.getNextInvocation());
-});
 
 export default router;

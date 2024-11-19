@@ -3,6 +3,7 @@ import { body, param, validationResult } from "express-validator";
 import articlesService from "../services/articlesService.js";
 import { checkExistingValidators } from "../middleware/customValidators.js";
 import { articleLimiter } from "../middleware/rateLimiter.js";
+import taskScheduler from "../services/taskScheduler.js";
 
 const router = express.Router();
 
@@ -27,6 +28,10 @@ router.get("/latest/:offset/:limit",
     }
 )
 
+router.get("/nextInvocation", async (req, res) => {
+    return res.json(taskScheduler.getNextInvocation());
+});
+
 router.get("/:id",
     articleLimiter,
     param("id").trim().notEmpty().isInt({min: 1}).withMessage("Invalid ID"),
@@ -42,5 +47,6 @@ router.get("/:id",
         }
     }
 )
+
 
 export default router;
