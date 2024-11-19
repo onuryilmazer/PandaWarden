@@ -123,8 +123,8 @@ class ScrapingService {
      */
     async _articleIsAlreadyInDatabase(article, sourceId) {
         const sameArticleQuery = await db.query(
-            "SELECT * FROM articles where source_id = $1 AND catalog_title LIKE $2", 
-            [sourceId, `%${article.title}%`]
+            "SELECT * FROM articles where source_id = $1 AND (catalog_title LIKE $2 OR identifier_within_source = $3)", 
+            [sourceId, `%${article.title}%`, article.identifierWithinSource]
         );
 
         return sameArticleQuery.rows.length !== 0;
@@ -138,9 +138,9 @@ class ScrapingService {
      */
     async _saveArticleIntoDatabase(article, sourceId) {
         const insertionQuery = await db.query(
-            "INSERT INTO articles (source_id, catalog_title, catalog_description, catalog_screenshot_path, details_title, details_description, details_aisummary, details_screenshot_path, details_url) " + 
-            "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9 )",
-            [sourceId, article.title, article.description, article.screenshotPath, article.detailsTitle, article.detailsDescription, article.aiSummary, article.detailsScreenshotPath, article.url]
+            "INSERT INTO articles (source_id, catalog_title, catalog_description, catalog_screenshot_path, details_title, details_description, details_aisummary, details_screenshot_path, details_url, identifier_within_source) " + 
+            "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9 , $10)",
+            [sourceId, article.title, article.description, article.screenshotPath, article.detailsTitle, article.detailsDescription, article.aiSummary, article.detailsScreenshotPath, article.url, article.identifierWithinSource]
         );
         
         return insertionQuery.rowCount > 0;
