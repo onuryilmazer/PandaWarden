@@ -7,6 +7,11 @@ import { useAuth } from "../../../context/AuthContext";
 import ErrorMessage from "../../../components/ErrorMessage";
 import { LoginExpiredError } from "../../../services/ErrorClasses";
 import SuccessMessage from "../../../components/SuccessMessage";
+import Tooltip from "../../../components/Tooltip";
+
+const TOOLTIP_TEXT = {
+    searchParams: "The parameters you choose will be normalized before the search to give you better results. This means that you do not have to worry about capitalization, punctuation, or word conjugations. For example, if your search term is 'wolf', you will also get results for 'wolves'."
+}
 
 function CreateScan() {
     const auth = useAuth();
@@ -48,7 +53,7 @@ function CreateScan() {
             <Link to={-1}>&lt;- Go Back</Link>
             <form style={{width: "100%"}} onSubmit={handleSubmit}>
             <div className="block-container">
-                <div className="block-row" ><p>Topics (comma-separated):</p> <input type="text" name="keywords" placeholder="NVIDIA, Amazon, Lithium mines, Military coup..."></input></div>
+                <div className="block-row" ><p>Topics (comma-separated): <Tooltip message={TOOLTIP_TEXT.searchParams} /></p> <input type="text" name="keywords" placeholder="NVIDIA, Amazon, Lithium mines, Military coup..."></input></div>
                 
                 <div className="block-row" >    
                     <p>Notification type:</p>
