@@ -4,6 +4,7 @@ import { deleteMonitoringRequest, getMonitoringRequestsOfUser, toggleMonitoringR
 import { Link } from "react-router-dom";
 import ErrorMessage from "../../../components/ErrorMessage";
 import ScanTeaser from "./ScanTeaser";
+import { LoginExpiredError } from "../../../services/ErrorClasses";
 
 function MonitoringRequests() {
     const auth = useAuth();
@@ -37,6 +38,8 @@ function MonitoringRequests() {
             setMonitoringRequests(result);
             setErrorMessage("");
         }).catch(e => {
+            if (e instanceof LoginExpiredError) return auth.logoutHandler();
+
             setErrorMessage(e.message);
         });
 
