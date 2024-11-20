@@ -4,6 +4,7 @@ import scrapingService from "../services/scrapingService.js";
 import { checkExistingValidators } from "../middleware/customValidators.js";
 import { scrapingLimiter } from "../middleware/rateLimiter.js";
 import { acquireScrapingLock, checkScrapingLock, releaseScrapingLock } from "../middleware/scrapingLockMiddleware.js";
+import { aiService } from "../services/aiService.js";
 
 const router = express.Router();
 
