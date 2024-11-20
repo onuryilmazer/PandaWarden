@@ -1,21 +1,48 @@
+import "./ScrapeTimer.css";
+
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ErrorMessage from "../../../components/ErrorMessage";
 import { getNextScrapeTime } from "../../../services/ArticleService";
+import SuccessMessage from "../../../components/SuccessMessage";
+import { triggerScraping } from "../../../services/ScrapingService";
+import LoadingMessage from "../../../components/LoadingMessage";
 
 function ScrapeTimer() {
     const auth = useAuth();
+    const loggedIn = !!auth.token;
     
     const [triggerRequest, setTriggerRequest] = useState(1);
     const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [collectionRunning, setCollectionRunning] = useState(false);
 
     const timerRef = useRef(null);
     const secondsDisplayRef = useRef(null);
 
+    const handleManualScraping = () => {
+        if (!loggedIn) return setErrorMessage("Only registered users can trigger manual article collection.");
+
+        setCollectionRunning(true);
+        setErrorMessage("");
+        setSuccessMessage("");
+
+        triggerScraping(auth.token)
+            .then(response => {
+                setErrorMessage("");
+                setSuccessMessage(response);
+            })
+            .catch(error => {
+                setSuccessMessage("");
+                setErrorMessage(error.message)
+            })
+            .finally(() => setCollectionRunning(false));
+    }
+
     useEffect(() => {
         let discard = false;
         
-        getNextScrapeTime({token: auth.token})
+        getNextScrapeTime()
             .then(result => { 
                 if(discard) return;
                 timerRef.current = setInterval( () => {
@@ -41,10 +68,13 @@ function ScrapeTimer() {
     return(
         <div className="block-container">
             <div className="block-header"> <h2>Collection timer</h2> </div>
-            {
-                errorMessage ? <ErrorMessage text={errorMessage} /> :
-                <p>Next collection in: <span ref={secondsDisplayRef}>Loading...</span> </p>
-            }
+            <div className="timer-trigger"> 
+                <p>Next scheduled collection in: <span ref={secondsDisplayRef}>{errorMessage ? " - " : "Loading..."}</span> </p> 
+                <button onClick={handleManualScraping} disabled={collectionRunning} >Start collection now</button>
+            </div>
+            {errorMessage && <ErrorMessage text={errorMessage} />}
+            {successMessage && <SuccessMessage text={successMessage} />}
+            {collectionRunning && <LoadingMessage text={"Collecting articles..."} />}
         </div>
     )
 }

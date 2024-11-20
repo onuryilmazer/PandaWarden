@@ -40,10 +40,9 @@ async function getArticle({id, token}) {
     return body;
 }
 
-async function getNextScrapeTime({token}) {
+async function getNextScrapeTime() {
     const header = await fetch(`${BASE_URL}/nextInvocation`, {
         method: "GET",
-        headers: {"Authorization": `Bearer ${token}`}
     }).catch(() => new ConnectionError());
 
     if (header instanceof ConnectionError) throw header;

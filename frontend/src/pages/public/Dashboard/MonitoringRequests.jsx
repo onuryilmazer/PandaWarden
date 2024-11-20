@@ -35,8 +35,9 @@ function MonitoringRequests() {
         getMonitoringRequestsOfUser(auth.token).then(result => {
             if (discard) return;
             setMonitoringRequests(result);
+            setErrorMessage("");
         }).catch(e => {
-            console.error(e);
+            setErrorMessage(e.message);
         });
 
         return () => discard = true;

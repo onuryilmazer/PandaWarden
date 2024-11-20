@@ -82,6 +82,7 @@ function Article() {
                 <div className="block-header">
                     <h2>Article screenshot</h2>
                 </div>
+                <a href={article?.details_url} rel="noreferrer" style={{fontSize: "large"}} >Click here to visit the original source</a>
                 <div className="thumbnail">
                     <img style={{maxWidth: "100%"}} src={"/" + article?.details_screenshot_path}></img>
                 </div>

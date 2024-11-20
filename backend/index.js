@@ -48,7 +48,7 @@ app.use((err, req, res, next) => {
         err.message = err.errors.map(e => e.message).join("\n");
     }
 
-    res.json(err);
+    res.json({...err, message: err.message});
 });
 
 

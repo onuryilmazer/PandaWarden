@@ -13,6 +13,7 @@
         color: white;
 
         white-space: pre-line;
+        text-align: center;
     }
 
     & .error-message-icon {

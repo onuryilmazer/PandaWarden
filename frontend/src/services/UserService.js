@@ -1,4 +1,4 @@
-import { ConnectionError, HttpError, LoginExpiredError, RateLimitingError } from "./ErrorClasses";
+import { ConnectionError, HttpError, LoginExpiredError, LoginRequiredError, RateLimitingError } from "./ErrorClasses";
 
 const BASE_URL = "/user";
 
@@ -12,7 +12,8 @@ async function getDetails(token) {
 
     const body = await header.json().catch(() => null);
     
-    if (header.status == 401) throw new LoginExpiredError();
+    if (header.status == 401 && body?.name === "TokenExpiredError") throw new LoginExpiredError();
+    else if (header.status == 401) throw new LoginRequiredError();
     else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body?.message ?? `Could not retrieve user details. \n ${header.statusText}`, header.status);
 
@@ -29,7 +30,8 @@ async function getMonitoringRequestsOfUser(token) {
 
     const body = await header.json().catch(() => null);
     
-    if (header.status == 401) throw new LoginExpiredError();
+    if (header.status == 401 && body?.name === "TokenExpiredError") throw new LoginExpiredError();
+    else if (header.status == 401) throw new LoginRequiredError();
     else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body?.message ?? `Could not retrieve monitoring requests. \n ${header.statusText}`, header.status);
 
@@ -46,7 +48,8 @@ async function getMonitoringRequestOfUser(token, requestId) {
 
     const body = await header.json().catch(() => null);
     
-    if (header.status == 401) throw new LoginExpiredError();
+    if (header.status == 401 && body?.name === "TokenExpiredError") throw new LoginExpiredError();
+    else if (header.status == 401) throw new LoginRequiredError();
     else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body?.message ?? `Could not retrieve monitoring request. \n ${header.statusText}`, header.status);
 
@@ -63,7 +66,8 @@ async function toggleMonitoringRequestActive(token, requestId) {
 
     const body = await header.json().catch(() => null);
     
-    if (header.status == 401) throw new LoginExpiredError();
+    if (header.status == 401 && body?.name === "TokenExpiredError") throw new LoginExpiredError();
+    else if (header.status == 401) throw new LoginRequiredError();
     else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body?.message ?? `Could not toggle monitoring request activeness. \n ${header.statusText}`, header.status);
 
@@ -80,7 +84,8 @@ async function deleteMonitoringRequest(token, requestId) {
 
     const body = await header.json().catch(() => null);
 
-    if (header.status == 401) throw new LoginExpiredError();
+    if (header.status == 401 && body?.name === "TokenExpiredError") throw new LoginExpiredError();
+    else if (header.status == 401) throw new LoginRequiredError();
     else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body?.message ?? `Could not delete monitoring request. \n ${header.statusText}`, header.status);
 
@@ -101,7 +106,8 @@ async function createMonitoringRequest(token, {keywords, sourceIds, repeatInterv
 
     const body = await header.json().catch(() => null);
 
-    if (header.status == 401) throw new LoginExpiredError();
+    if (header.status == 401 && body?.name === "TokenExpiredError") throw new LoginExpiredError();
+    else if (header.status == 401) throw new LoginRequiredError();
     else if (header.status === 429) throw new RateLimitingError();
     else if (!header.ok) throw new HttpError(body?.message ?? `Could not create monitoring request. \n ${header.statusText}`, header.status);
 
